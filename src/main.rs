@@ -2,15 +2,14 @@ extern crate ini;
 extern crate reqwest;
 
 pub mod android_root;
-pub mod android_util;
 pub mod cmd;
 pub mod repo;
 
-use crate::cmd::{download::download, info::info, search::search};
-use std::process::exit;
+use crate::cmd::{download::download, info::info, install::install, search::search};
 
 use clap::{Parser, Subcommand};
 use repo::Repo;
+use std::process::exit;
 
 #[derive(Debug, Subcommand)]
 enum Commands {
@@ -28,6 +27,11 @@ enum Commands {
     #[command(arg_required_else_help = true,  aliases = &["dl"])]
     Download {
         /// Downloads the modules from the given ids
+        ids: Vec<String>,
+    },
+    #[command(arg_required_else_help = true,  aliases = &["add", "get", "fetch"])]
+    Install {
+        /// Installs selected modules
         ids: Vec<String>,
     },
     // Enable {
@@ -73,9 +77,17 @@ async fn main() {
             for id in ids {
                 info(&json, id).await;
             }
+            exit(0);
         }
         Commands::Search { query } => {
             search(json.clone(), query).await;
+            exit(0);
+        }
+        Commands::Install { ids } => {
+            for id in ids {
+                install(client.clone(), &json, &id).await;
+            }
+            exit(0);
         }
         //         Commands::Enable { ids } => {
         //              let mut some_disabled= false;
@@ -143,6 +155,7 @@ async fn main() {
             for id in ids {
                 download(client.clone(), &json, id).await;
             }
+            exit(0);
         }
     }
     exit(0);

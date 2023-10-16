@@ -5,7 +5,7 @@ use crate::repo::Repo;
 pub async fn search(json: Repo, query: String) {
     print!("\x1B[1mFound these modules:\x1B[0m\n\n");
     for module in json.modules {
-        if module.id.to_lowercase().contains(&query.to_lowercase())
+        if query == "all" || module.id.to_lowercase().contains(&query.to_lowercase())
             || module.name.to_lowercase().contains(&query.to_lowercase())
         {
             println!(
@@ -32,5 +32,4 @@ pub async fn search(json: Repo, query: String) {
             );
         }
     }
-    exit(0);
 }
