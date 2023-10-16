@@ -63,3 +63,23 @@ pub(crate) fn find_module(json: &Repo, id: String) -> Module {
     let module_pos = json.modules.iter().position(|m| m.id == id).unwrap();
     return json.modules[module_pos].clone();
 }
+
+pub(crate) fn find_version(versions: Vec<Version>, code: i64) -> Version {
+    let mut arr = versions.clone();
+    arr.reverse();
+    if code != 0 {
+        let version_exists = arr.iter().any(|v| v.version_code == code);
+        if !version_exists {
+            println!("Unable to find {}", code);
+            exit(1);
+        }
+        let version_pos = arr
+            .iter()
+            .rev()
+            .position(|v| v.version_code == code)
+            .unwrap();
+        return arr[version_pos].clone();
+    } else {
+        return arr[0].clone();
+    }
+}

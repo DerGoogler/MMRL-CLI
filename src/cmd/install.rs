@@ -7,7 +7,7 @@ use std::process::{Command, Stdio};
 
 pub async fn install(client: Client, json: &Repo, id: &String) {
     info(json, id.clone()).await;
-    let path = download(client.clone(), &json, id.clone()).await;
+    let path = download(client.clone(),0, &json, id.clone()).await;
     let (bin, args) = get_install_cli(&path);
 
     let stdout = Command::new(bin)

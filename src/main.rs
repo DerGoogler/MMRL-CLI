@@ -41,6 +41,8 @@ enum Commands {
     },
     #[command(arg_required_else_help = true,  aliases = &["dl"])]
     Download {
+        #[arg(short, long, default_value_t = 0)]
+        version: i64,
         /// Downloads the modules from the given ids
         ids: Vec<String>,
     },
@@ -219,9 +221,9 @@ async fn main() {
         //                 println!("Nothing were removed");
         //             }
         //         }
-        Commands::Download { ids } => {
+        Commands::Download { version, ids } => {
             for id in ids {
-                download(client.clone(), &json, id).await;
+                download(client.clone(),version, &json, id).await;
             }
             exit(0);
         }

@@ -1,6 +1,6 @@
 use crate::{
     android_root::get_downloads_dir,
-    repo::{find_module, Repo},
+    repo::{find_module, find_version, Repo},
 };
 
 use futures_util::StreamExt;
@@ -10,17 +10,24 @@ use std::cmp::min;
 use std::fs::File;
 use std::io::Write;
 
-pub async fn download(client: Client, json: &Repo, id: String) -> String {
+pub async fn download(client: Client, version: i64, json: &Repo, id: String) -> String {
+    // let mid: Vec<&str> = id.split("@").collect();
+
+    // let _id = mid[0].to_owned();
+    // let _ver = mid[1].to_owned().parse::<i32>().unwrap();
+
     let module = find_module(&json, id);
 
+    let version = find_version(module.versions.clone(), version);
     println!("Downloading {}", module.name);
+    println!("Version: {}\n", version.version);
 
-    let zip_url = &module.versions[0].clone().zip_url.to_owned()[..];
+    let zip_url = &version.zip_url.to_owned()[..];
 
     let path = &[
         get_downloads_dir(),
         [
-            [module.versions[0].clone().version, module.id].join("-"),
+            [module.version, module.id].join("-"),
             "zip".to_string(),
         ]
         .join("."),
