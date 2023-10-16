@@ -48,19 +48,19 @@ mmrl-izzy info app-data-file-exec
 Wanna search some module? You can do it.
 
 ```shell
-mmrl search node # mmrl lookup "hide user"
+mmrl search id node # mmrl lookup "hide user"
 
 # or 
-mmrl-izzy search aosp
+mmrl-izzy search all aosp
 ```
 
-Display all modules
+Get all filter
 
 ```shell
-mmrl search all
+mmrl search 
 
 # or
-mmrl-izzy search all
+mmrl-izzy search
 ```
 
 ## Downloading
@@ -68,7 +68,7 @@ mmrl-izzy search all
 Downloading just the module is also posible
 
 ```shell
-mmrl download mkshrc node_on_android
+mmrl download mkshrc node_on_android # --version 152
 ```
 
 ## Installing modules

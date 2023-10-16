@@ -17,6 +17,8 @@ enum SearchCommands {
     All { query: String },
     #[command(arg_required_else_help = true)]
     Author { query: String },
+    #[command(arg_required_else_help = true)]
+    Id { query: String },
     #[command(arg_required_else_help = true, alias = "desc")]
     Description { query: String },
     #[command(arg_required_else_help = true, alias = "ver")]
@@ -110,6 +112,13 @@ async fn main() {
                             .version
                             .to_lowercase()
                             .contains(&query.to_lowercase())
+                })
+                .await;
+                exit(0);
+            }
+            SearchCommands::Id { query } => {
+                search(json.clone(), |module| {
+                    module.id.to_lowercase().contains(&query.to_lowercase())
                 })
                 .await;
                 exit(0);
