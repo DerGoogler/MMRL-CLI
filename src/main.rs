@@ -1,0 +1,149 @@
+extern crate ini;
+extern crate reqwest;
+
+pub mod android_root;
+pub mod android_util;
+pub mod cmd;
+pub mod repo;
+
+use crate::cmd::{download::download, info::info, search::search};
+use std::process::exit;
+
+use clap::{Parser, Subcommand};
+use repo::Repo;
+
+#[derive(Debug, Subcommand)]
+enum Commands {
+    #[command(arg_required_else_help = true, aliases = &["view"])]
+    Info {
+        /// Give info from given module ids
+        ids: Vec<String>,
+    },
+
+    #[command(arg_required_else_help = true,  aliases = &["lookup", "find"])]
+    Search {
+        /// Downloads the modules from the given ids
+        query: String,
+    },
+    #[command(arg_required_else_help = true,  aliases = &["dl"])]
+    Download {
+        /// Downloads the modules from the given ids
+        ids: Vec<String>,
+    },
+    // Enable {
+    //     /// Enabled selected modules
+    //     ids: Vec<String>,
+    // },
+    // Disable {
+    //     /// Disabled selected modules
+    //     ids: Vec<String>,
+    // },
+    // Remove {
+    //     /// Remove selected modules
+    //     ids: Vec<String>,
+    // },
+}
+
+/// Magisk Module Repo Loader CLI
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Were the modules comes from
+    #[arg(short, long, default_value_t = String::from("https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json"))]
+    repo: String,
+
+    #[clap(subcommand)]
+    commands: Commands,
+}
+
+#[tokio::main]
+async fn main() {
+    let client = reqwest::Client::new();
+    let args = Args::parse();
+
+    let response = client.get(args.repo).send().await.unwrap();
+
+    let json: Repo = response.json().await.unwrap();
+
+    println!("\nSelected Repo: {}\n", json.name);
+    // println!("Root manager: {}\n", &get_root_manager());
+
+    match args.commands {
+        Commands::Info { ids } => {
+            for id in ids {
+                info(&json, id).await;
+            }
+        }
+        Commands::Search { query } => {
+            search(json.clone(), query).await;
+        }
+        //         Commands::Enable { ids } => {
+        //              let mut some_disabled= false;
+        //             for id in ids {
+        //                 let module = find_module(json.clone(), id);
+        //                 let disable = &format!("/data/adb/modules/{}/disable", module.id);
+        //                 if !Path::new(&disable).exists() {
+        //                     if !File::create(disable).is_err() {
+        //                         some_disabled = true;
+        //                         println!("{} has been disabled.", module.name);
+        //                     }
+        //                 }
+        //             }
+        //             if !some_disabled {
+        //                 println!("Nothing were disabled");
+        //             }
+        //         }
+        // Commands::Disable { ids } => {
+        //     let mut some_disabled= false;
+        //     for id in ids {
+        //         let module = find_module(&json, id);
+        //         let disable = Path::new("/data/abd/modules").join(module.id).join("disable");
+        //         if !disable.exists() {
+        //             let mut f = File::create(disable).unwrap();
+        //                 match f.write_all(b"") {
+        //                     Ok(addr) => {
+        //                         some_disabled = true;
+        //                         println!("{} will be removed.", module.name);
+        //                     },
+        //                     Err(err) => {
+        //                         println!("{}", err);
+        //                         exit(1);
+        //                     },
+        //                 }
+        //         }
+        //     }
+        //     if !some_disabled {
+        //         println!("Nothing were disabled");
+        //     }
+        // }
+        //         Commands::Remove { ids } => {
+        //             let mut some_removed= false;
+        //             for id in ids {
+        //                 let module = find_module(&json, id);
+
+        // //                 let remove = Path::new("/data/adb/modules/");
+
+        // //                 let gg = remove.join(module.id).join("remove");
+        // // println!("{:?}", gg);
+        //                 // if !remove.exists() {
+        //                 //     match fs::write(remove, b"Lorem ipsum") {
+        //                 //         Ok(addr) => {
+        //                 //             some_removed = true;
+        //                 //             println!("{} will be removed.", module.name);
+        //                 //         },
+        //                 //         Err(_) => (),
+        //                 //     }
+        //                 // }
+        //             }
+        //             if !some_removed {
+        //                 println!("Nothing were removed");
+        //             }
+        //         }
+        Commands::Download { ids } => {
+            for id in ids {
+                download(client.clone(), &json, id).await;
+            }
+        }
+    }
+    exit(0);
+}
