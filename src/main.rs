@@ -12,6 +12,15 @@ use repo::Repo;
 use std::process::exit;
 
 #[derive(Debug, Subcommand)]
+enum SearchCommands {
+    All { query: String },
+    Author { query: String },
+    Desc { query: String },
+    Version { query: String },
+    License { query: String },
+}
+
+#[derive(Debug, Subcommand)]
 enum Commands {
     #[command(arg_required_else_help = true, aliases = &["view"])]
     Info {
@@ -20,8 +29,10 @@ enum Commands {
     },
     #[command(arg_required_else_help = true,  aliases = &["lookup", "find"])]
     Search {
-        /// Downloads the modules from the given ids
-        query: String,
+        #[clap(subcommand)]
+        commands: SearchCommands,
+        // Downloads the modules from the given ids
+        // query: String,
     },
     #[command(arg_required_else_help = true,  aliases = &["dl"])]
     Download {
@@ -78,10 +89,63 @@ async fn main() {
             }
             exit(0);
         }
-        Commands::Search { query } => {
-            search(json.clone(), query).await;
-            exit(0);
-        }
+        Commands::Search { commands } => match commands {
+            SearchCommands::All { query } => {
+                search(json.clone(), |module| {
+                    module.id.to_lowercase().contains(&query.to_lowercase())
+                        || module.name.to_lowercase().contains(&query.to_lowercase())
+                        || module
+                            .description
+                            .to_lowercase()
+                            .contains(&query.to_lowercase())
+                        || module.author.to_lowercase().contains(&query.to_lowercase())
+                        || module
+                            .version
+                            .to_lowercase()
+                            .contains(&query.to_lowercase())
+                })
+                .await;
+                exit(0);
+            }
+            SearchCommands::Author { query } => {
+                search(json.clone(), |module| {
+                    module.author.to_lowercase().contains(&query.to_lowercase())
+                })
+                .await;
+                exit(0);
+            }
+            SearchCommands::Desc { query } => {
+                search(json.clone(), |module| {
+                    module
+                        .description
+                        .to_lowercase()
+                        .contains(&query.to_lowercase())
+                })
+                .await;
+                exit(0);
+            }
+            SearchCommands::Version { query } => {
+                search(json.clone(), |module| {
+                    module
+                        .version
+                        .to_lowercase()
+                        .contains(&query.to_lowercase())
+                })
+                .await;
+                exit(0);
+            }
+            SearchCommands::License { query } => {
+                search(json.clone(), |module| {
+                    module
+                        .track
+                        .license
+                        .to_lowercase()
+                        .contains(&query.to_lowercase())
+                })
+                .await;
+                exit(0);
+            }
+        },
         Commands::Install { ids } => {
             for id in ids {
                 install(client.clone(), &json, &id).await;
