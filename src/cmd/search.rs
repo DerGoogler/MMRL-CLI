@@ -1,5 +1,3 @@
-use std::process::exit;
-
 use crate::repo::Repo;
 
 pub async fn search(json: Repo, query: String) {

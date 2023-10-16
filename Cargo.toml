@@ -19,3 +19,7 @@ futures-util = "0.3.28"
 mnt = "0.3.1"
 rust-ini = "0.19.0"
 openssl = { version = "0.10", features = ["vendored"] }
+
+[dependencies.confy]
+features = ["toml_conf"]
+default-features = false

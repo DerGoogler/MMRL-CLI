@@ -18,7 +18,6 @@ enum Commands {
         /// Give info from given module ids
         ids: Vec<String>,
     },
-
     #[command(arg_required_else_help = true,  aliases = &["lookup", "find"])]
     Search {
         /// Downloads the modules from the given ids
@@ -158,5 +157,4 @@ async fn main() {
             exit(0);
         }
     }
-    exit(0);
 }

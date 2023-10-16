@@ -9,7 +9,6 @@ use reqwest::Client;
 use std::cmp::min;
 use std::fs::File;
 use std::io::Write;
-use std::process::exit;
 
 pub async fn download(client: Client, json: &Repo, id: String) -> String {
     let module = find_module(&json, id);
