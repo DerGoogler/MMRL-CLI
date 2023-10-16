@@ -13,10 +13,15 @@ use std::process::exit;
 
 #[derive(Debug, Subcommand)]
 enum SearchCommands {
+    #[command(arg_required_else_help = true)]
     All { query: String },
+    #[command(arg_required_else_help = true)]
     Author { query: String },
-    Desc { query: String },
+    #[command(arg_required_else_help = true, alias = "desc")]
+    Description { query: String },
+    #[command(arg_required_else_help = true, alias = "ver")]
     Version { query: String },
+    #[command(arg_required_else_help = true, alias = "li")]
     License { query: String },
 }
 
@@ -114,7 +119,7 @@ async fn main() {
                 .await;
                 exit(0);
             }
-            SearchCommands::Desc { query } => {
+            SearchCommands::Description { query } => {
                 search(json.clone(), |module| {
                     module
                         .description
