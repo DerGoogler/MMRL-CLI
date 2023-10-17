@@ -1,4 +1,3 @@
-extern crate ini;
 extern crate reqwest;
 
 pub mod android_root;
