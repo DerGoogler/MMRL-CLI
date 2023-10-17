@@ -65,21 +65,19 @@ pub(crate) fn find_module(json: &Repo, id: String) -> Module {
 }
 
 pub(crate) fn find_version(versions: Vec<Version>, code: i64) -> Version {
-    let mut arr = versions.clone();
-    arr.reverse();
     if code != 0 {
-        let version_exists = arr.iter().any(|v| v.version_code == code);
+        let version_exists = versions.iter().any(|v| v.version_code == code);
         if !version_exists {
             println!("Unable to find {}", code);
             exit(1);
         }
-        let version_pos = arr
+        let version_pos = versions
             .iter()
             .rev()
             .position(|v| v.version_code == code)
             .unwrap();
-        return arr[version_pos].clone();
+        return versions[version_pos].clone();
     } else {
-        return arr[0].clone();
+        return versions.last().unwrap().clone();
     }
 }
