@@ -5,9 +5,9 @@ use reqwest::Client;
 use std::io::{BufRead, BufReader, Error, ErrorKind};
 use std::process::{Command, Stdio};
 
-pub async fn install(client: Client, json: &Repo, id: &String) {
+pub async fn install(client: Client, version:i64, json: &Repo, id: &String) {
     info(json, id.clone()).await;
-    let path = download(client.clone(),0, &json, id.clone()).await;
+    let path = download(client.clone(), version, &json, id.clone()).await;
     let (bin, args) = get_install_cli(&path);
 
     let stdout = Command::new(bin)

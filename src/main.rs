@@ -43,6 +43,7 @@ enum Commands {
     },
     #[command(arg_required_else_help = true,  aliases = &["dl"])]
     Download {
+        /// Downloads the selected version
         #[arg(short, long, default_value_t = 0)]
         version: i64,
         /// Downloads the modules from the given ids
@@ -50,6 +51,9 @@ enum Commands {
     },
     #[command(arg_required_else_help = true,  aliases = &["add", "get", "fetch"])]
     Install {
+        /// Installs the selected version
+        #[arg(short, long, default_value_t = 0)]
+        version: i64,
         /// Installs selected modules
         ids: Vec<String>,
     },
@@ -162,9 +166,9 @@ async fn main() {
                 exit(0);
             }
         },
-        Commands::Install { ids } => {
+        Commands::Install { version, ids } => {
             for id in ids {
-                install(client.clone(), &json, &id).await;
+                install(client.clone(), version, &json, &id).await;
             }
             exit(0);
         }
@@ -232,7 +236,7 @@ async fn main() {
         //         }
         Commands::Download { version, ids } => {
             for id in ids {
-                download(client.clone(),version, &json, id).await;
+                download(client.clone(), version, &json, id).await;
             }
             exit(0);
         }
