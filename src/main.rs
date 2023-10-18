@@ -3,7 +3,7 @@ extern crate reqwest;
 pub mod android_root;
 pub mod cmd;
 pub mod repo;
-
+pub mod utils;
 use crate::cmd::{download::download, info::info, install::install, search::search};
 
 use clap::{Parser, Subcommand};
