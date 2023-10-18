@@ -1,5 +1,6 @@
 [package]
 name = "mmrl"
+description = "MMRL comes now as command line interface, with multi module install support!"
 version = "0.1.0"
 edition = "2021"
 
