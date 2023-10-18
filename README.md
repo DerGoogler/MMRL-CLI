@@ -48,7 +48,7 @@ mmrl-izzy info app-data-file-exec
 Wanna search some module? You can do it.
 
 ```shell
-mmrl search id node # mmrl lookup "hide user"
+mmrl search id node # mmrl lookup all "hide user"
 
 # or 
 mmrl-izzy search all aosp
