@@ -6,4 +6,4 @@ install: build
 # rustup target add aarch64-linux-android
 
 module: build
-	bash module.sh
+	bash build-module.sh
