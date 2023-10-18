@@ -4,7 +4,7 @@ pub mod android_root;
 pub mod cmd;
 pub mod repo;
 pub mod utils;
-use crate::cmd::{download::download, info::info, install::install, search::search};
+use crate::cmd::{download::download, info::info, install::install, search::search, upself::upself};
 
 use clap::{Parser, Subcommand};
 use repo::Repo;
@@ -30,6 +30,11 @@ enum SearchCommands {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
+    #[command(arg_required_else_help = true, aliases = &["sup", "up"])]
+    Upself {
+        /// Example: 0.1.0
+        version: String,
+    },
     #[command(arg_required_else_help = true, aliases = &["view"])]
     Info {
         /// Give info from given module ids
@@ -101,6 +106,10 @@ async fn main() {
             for id in ids {
                 info(&json, id).await;
             }
+            exit(0);
+        }
+        Commands::Upself { version } => {
+            upself(client, version).await;
             exit(0);
         }
         Commands::Search { commands } => match commands {
