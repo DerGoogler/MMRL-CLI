@@ -76,5 +76,5 @@ mmrl download mkshrc node_on_android # --version 152
 Maybe simple...
 
 ```shell
-mmrl install mkshrc node_on_android
+mmrl install mkshrc@1.3.4 node_on_android
 ```

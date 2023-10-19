@@ -26,9 +26,9 @@ struct MMRLINI {
     dependencies: Option<Box<Dependencies>>,
 }
 
-pub async fn install(client: Client, version: i64, json: &Repo, id: &String) {
+pub async fn install(client: Client, json: &Repo, id: &String) {
     info(json, id.clone()).await;
-    let path = download(client.clone(), version, &json, id.clone()).await;
+    let path = download(client.clone(), &json, id.clone()).await;
 
     let mini = read_module_prop_file(&path);
 

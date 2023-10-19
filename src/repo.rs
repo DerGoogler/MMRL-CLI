@@ -64,20 +64,26 @@ pub(crate) fn find_module(json: &Repo, id: String) -> Module {
     return json.modules[module_pos].clone();
 }
 
-pub(crate) fn find_version(versions: Vec<Version>, code: i64) -> Version {
-    if code != 0 {
-        let version_exists = versions.iter().any(|v| v.version_code == code);
+pub(crate) fn find_version(versions: Vec<Version>, version_name: String) -> Version {
+    if version_name.to_lowercase() == "latest" {
+        return versions.last().unwrap().clone();
+    } else {
+        let version_exists = versions.iter().any(|v| v.version == version_name);
         if !version_exists {
-            println!("Unable to find {}", code);
+            println!("Unable to find {}", version_name);
             exit(1);
         }
         let version_pos = versions
             .iter()
-            .rev()
-            .position(|v| v.version_code == code)
+            .position(|v| v.version == version_name)
             .unwrap();
         return versions[version_pos].clone();
-    } else {
-        return versions.last().unwrap().clone();
     }
 }
+
+pub fn get_id_details(id: String) -> (String, String) {
+    let parts: Vec<&str> = id.split('@').collect();
+    let _id = parts.get(0).unwrap();
+    let _ver = parts.get(1).unwrap_or(&"latest");
+    return (_id.to_string(), _ver.to_string())
+ }
