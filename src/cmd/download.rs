@@ -26,5 +26,7 @@ pub async fn download(client: Client, json: &Repo, id: String) -> () {
 
         download_from_url(client, version.zip_url, module.name, path).await;
     } else {
+        let path = &[get_downloads_dir(), ["URL-File".to_string(), "zip".to_string()].join(".")].join("/");
+        download_from_url(client, id.clone(), id, path).await;
     }
 }
