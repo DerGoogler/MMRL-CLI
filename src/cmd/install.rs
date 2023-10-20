@@ -1,11 +1,11 @@
 extern crate serde;
 extern crate serde_ini;
 
-use crate::utils::{confirm, read_module_prop_file};
+use crate::utils::{confirm, download_from_url, read_module_prop_file};
 
-use crate::android_root::get_install_cli;
-use crate::cmd::{download::download, info::info};
-use crate::repo::Repo;
+use crate::android_root::{get_install_cli, get_downloads_dir};
+use crate::cmd::info::info;
+use crate::repo::{Repo, get_id_details, find_module, find_version};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use std::io::{BufRead, BufReader, Error, ErrorKind};
@@ -26,9 +26,22 @@ struct MMRLINI {
     dependencies: Option<Box<Dependencies>>,
 }
 
-pub async fn install(client: Client, yes:bool, json: &Repo, id: &String) {
-    info(json, id.clone()).await;
-    let path = download(client.clone(), &json, id.clone()).await;
+pub async fn install(client: Client, yes: bool, json: &Repo, id: String) {
+    let (_id, _ver) = get_id_details(id);
+    info(json, _id.clone()).await;
+    let module = find_module(&json, _id.clone());
+    let version = find_version(module.versions.clone(), _ver);
+
+    let path = &[
+        get_downloads_dir(),
+        [[version.version.clone(), module.id].join("-"), "zip".to_string()].join("."),
+    ]
+    .join("/");
+
+    println!("Downloading {}", module.name);
+    println!("Version: {}\n", &version.version);
+
+    let path = download_from_url(client.clone(), version.zip_url, module.name, path).await;
 
     let mini = read_module_prop_file(&path);
 

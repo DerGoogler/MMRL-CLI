@@ -992,6 +992,7 @@ dependencies = [
  "futures-util",
  "indicatif",
  "rand",
+ "regex",
  "reqwest",
  "rust-ini",
  "serde",

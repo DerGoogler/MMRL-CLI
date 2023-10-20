@@ -32,6 +32,8 @@ enum SearchCommands {
 enum Commands {
     #[command(arg_required_else_help = true, aliases = &["sup", "up"])]
     Upself {
+        #[arg(short, long)]
+        yes: bool,
         /// Example: 0.1.0
         version: String,
     },
@@ -54,7 +56,6 @@ enum Commands {
     },
     #[command(arg_required_else_help = true,  aliases = &["add", "get", "fetch"])]
     Install {
-        /// Downloads the selected version
         #[arg(short, long)]
         yes: bool,
         /// Installs selected modules
@@ -105,8 +106,8 @@ async fn main() {
             }
             exit(0);
         }
-        Commands::Upself { version } => {
-            upself(client, version).await;
+        Commands::Upself { yes, version } => {
+            upself(client, version, yes).await;
             exit(0);
         }
         Commands::Search { commands } => match commands {
@@ -182,7 +183,7 @@ async fn main() {
         },
         Commands::Install { yes, ids } => {
             for id in ids {
-                install(client.clone(), yes, &json, &id).await;
+                install(client.clone(), yes, &json, id).await;
             }
             exit(0);
         }
