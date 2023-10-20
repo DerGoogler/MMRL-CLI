@@ -1,21 +1,38 @@
+use futures_util::StreamExt;
+use indicatif::{ProgressBar, ProgressStyle};
+use regex::Regex;
+use reqwest::Client;
+use std::cmp::min;
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
+use std::path::Path;
 use zip::ZipArchive;
-use futures_util::StreamExt;
-use indicatif::{ProgressBar, ProgressStyle};
-use reqwest::Client;
-use std::cmp::min;
-use std::io::Write;
-use regex::Regex;
+use serde::{Deserialize, Serialize};
 
-pub fn read_module_prop_file(zip_file_path: &str) -> std::io::Result<String> {
-    let zip_file = File::open(zip_file_path)?;
-    let mut archive = ZipArchive::new(zip_file)?;
-    let mut module_prop_file = archive.by_name("mmrl.ini")?;
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct MMRLJSON {
+    pub require: Vec<String>,
+}
+
+pub fn get_mmrl_json(path: &str) -> Result<MMRLJSON, serde_json::Error> {
+    let fname = Path::new(path);
+    let zipfile = File::open(fname).unwrap();
+
+    let mut archive = ZipArchive::new(zipfile).unwrap();
+
+    let mut file = match archive.by_name("mmrl.json") {
+        Ok(file) => file,
+        Err(..) => {
+            println!("mmrl.json not found");
+            return serde_json::from_str("{\"require\":[]}")
+        }
+    };
+
     let mut contents = String::new();
-    module_prop_file.read_to_string(&mut contents)?;
-    Ok(contents)
+    file.read_to_string(&mut contents).unwrap();
+    return serde_json::from_str(contents.as_str());
 }
 
 pub fn confirm(msg: &str) -> bool {
@@ -40,7 +57,6 @@ pub fn confirm(msg: &str) -> bool {
         }
     }
 }
-
 
 pub async fn download_from_url(client: Client, url: String, name: String, path: &String) -> String {
     let res = client
@@ -85,7 +101,6 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
 }
 
 pub fn is_url(url: &str) -> bool {
-    let url_regex: &str =
-    r"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,4})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)";
+    let url_regex: &str = r"https?://(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,4})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)";
     return Regex::new(url_regex).unwrap().is_match(url);
 }

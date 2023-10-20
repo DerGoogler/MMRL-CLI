@@ -1,29 +1,31 @@
 extern crate serde;
 extern crate serde_ini;
 
-use crate::utils::{confirm, download_from_url, read_module_prop_file, is_url};
+use crate::utils::{confirm, download_from_url, get_mmrl_json, is_url};
 
 use crate::android_root::{get_downloads_dir, get_install_cli};
 use crate::cmd::info::info;
 use crate::repo::{find_module, find_version, get_id_details, Repo};
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
 use std::io::{BufRead, BufReader, Error, ErrorKind};
 use std::path::Path;
 use std::process::{exit, Command, Stdio};
 
-#[derive(Deserialize, Serialize, Clone, PartialEq, Debug)]
-struct Dependencies {
-    name: Vec<String>,
-}
+fn check_requires(path: String) {
+    let mini = get_mmrl_json(&path);
 
-#[derive(Deserialize, Serialize, Clone, PartialEq, Default, Debug)]
-struct MMRLINI {
-    // key1: String,
-    // key2: u32,
-    // key3: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    dependencies: Option<Box<Dependencies>>,
+    for req in mini.unwrap().require {
+        let dep_path = Path::new("/data/adb/modules")
+            .join(req.clone())
+            .join("module.prop");
+        let dep_path_update = Path::new("/data/adb/modules_update")
+            .join(req.clone())
+            .join("module.prop");
+        if !dep_path_update.exists() || !dep_path.exists(){
+            println!("This module requires {} to be installed", req.clone());
+            exit(1)
+        }
+    }
 }
 
 pub async fn install(client: Client, yes: bool, json: &Repo, id: String) {
@@ -46,29 +48,8 @@ pub async fn install(client: Client, yes: bool, json: &Repo, id: String) {
         println!("Downloading {}", module.name);
         println!("Version: {}\n", &version.version);
 
-        let path = download_from_url(client.clone(), version.zip_url, module.name, path).await;
-
-        let mini = read_module_prop_file(&path);
-
-        if mini.is_ok() {
-            let props: Result<MMRLINI, serde_ini::de::Error> =
-                serde_ini::from_str::<MMRLINI>(&mini.unwrap());
-            if props.is_ok() {
-                let deps = props.unwrap().dependencies.unwrap();
-                for dep in deps.name {
-                    let dep_path = Path::new("/data/adb/modules")
-                        .join(dep.clone())
-                        .join("module.prop");
-                    let dep_path_update = Path::new("/data/adb/modules_update")
-                        .join(dep.clone())
-                        .join("module.prop");
-                    if !dep_path.exists() || !dep_path_update.exists() {
-                        println!("This module requires {} to be installed", dep.clone());
-                        exit(1)
-                    }
-                }
-            }
-        }
+        download_from_url(client.clone(), version.zip_url, module.name, path).await;
+        check_requires(path.clone());
 
         let success = yes || confirm("\nDo you want to continue [y/N]? ");
 
@@ -100,6 +81,7 @@ pub async fn install(client: Client, yes: bool, json: &Repo, id: String) {
         ]
         .join("/");
         download_from_url(client, id.clone(), id, path).await;
+        check_requires(path.clone());
 
         let success = yes || confirm("\nDo you want to continue [y/N]? ");
 
