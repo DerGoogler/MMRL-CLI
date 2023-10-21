@@ -13,7 +13,7 @@ pub async fn download(client: Client, json: &Repo, id: String) -> () {
 
         let version = find_version(module.versions.clone(), _ver);
         println!("Downloading {}", module.name);
-        println!("Version: {}\n", version.version);
+        println!("Version: {}", version.version);
 
         let name = get_last(_url);
         let path = &[

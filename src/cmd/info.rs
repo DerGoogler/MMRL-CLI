@@ -24,5 +24,5 @@ pub async fn info(json: &Repo, id: String) {
     );
     println!("\x1B[1mDescription:\x1B[0m {}", module.description);
     println!( "\x1B[1mLicense:\x1B[0m \x1B[36m{}\x1B[0m", module.track.license);
-    println!("\x1B[2mModule id: {}\x1B[0m\n", _id);
+    println!("\x1B[2mModule id: {}\x1B[0m", _id);
 }
