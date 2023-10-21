@@ -38,6 +38,7 @@ enum SearchCommands {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
+    /// Update MMRL CLI
     #[command(arg_required_else_help = true, aliases = &["sup", "up"])]
     Upself {
         /// Skip confirm
@@ -46,11 +47,13 @@ enum Commands {
         /// Example: 0.1.0
         version: String,
     },
+    /// View module infomation
     #[command(arg_required_else_help = true, aliases = &["view"])]
     Info {
         /// Give info from given module ids
         ids: Vec<String>,
     },
+    /// Search through modules
     #[command(arg_required_else_help = true,  aliases = &["lookup", "find"])]
     Search {
         #[clap(subcommand)]
@@ -58,11 +61,13 @@ enum Commands {
         // Downloads the modules from the given ids
         // query: String,
     },
+    /// Download any module
     #[command(arg_required_else_help = true,  aliases = &["dl"])]
     Download {
         /// Downloads the modules from the given ids
         ids: Vec<String>,
     },
+    /// Install any module
     #[command(arg_required_else_help = true,  aliases = &["add", "get", "fetch"])]
     Install {
         /// Skip confirm
