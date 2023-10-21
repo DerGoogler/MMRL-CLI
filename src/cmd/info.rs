@@ -2,10 +2,10 @@ use std::path::Path;
 
 use ini::Ini;
 
-use crate::repo::{find_module, Repo};
+use crate::repo::{find_module, Module};
 
-pub async fn info(json: &Repo, id: String) {
-    let module = find_module(&json, id);
+pub async fn info(modules: &Vec<Module>, id: String) {
+    let module = find_module(&modules, id);
                 
     let _id = &module.id;
 

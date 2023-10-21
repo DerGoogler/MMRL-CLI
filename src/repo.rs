@@ -54,14 +54,14 @@ pub struct Version {
     pub changelog: String,
 }
 
-pub(crate) fn find_module(json: &Repo, id: String) -> Module {
-    let module_exists = json.modules.iter().any(|m| m.id == id);
+pub(crate) fn find_module(modules: &Vec<Module>, id: String) -> Module {
+    let module_exists = modules.iter().any(|m| m.id == id);
     if !module_exists {
         println!("Unable to find {}", id);
         exit(1);
     }
-    let module_pos = json.modules.iter().position(|m| m.id == id).unwrap();
-    return json.modules[module_pos].clone();
+    let module_pos = modules.iter().position(|m| m.id == id).unwrap();
+    return modules[module_pos].clone();
 }
 
 pub(crate) fn find_version(versions: Vec<Version>, version_name: String) -> Version {

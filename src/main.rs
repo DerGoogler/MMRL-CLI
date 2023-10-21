@@ -4,11 +4,19 @@ pub mod android_root;
 pub mod cmd;
 pub mod repo;
 pub mod utils;
-use crate::cmd::{download::download, info::info, install::install, search::search, upself::upself};
+use crate::cmd::{
+    download::download, info::info, install::install, search::search, upself::upself,
+};
+use crate::repo::Module;
 
 use clap::{Parser, Subcommand};
 use repo::Repo;
-use std::process::exit;
+use std::io::{Read, Write};
+use std::{
+    fs::{self, File},
+    path::Path,
+    process::exit,
+};
 
 #[derive(Debug, Subcommand)]
 enum SearchCommands {
@@ -84,30 +92,61 @@ enum Commands {
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// Were the modules comes from
-    #[arg(short, long, default_value_t = String::from("https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json"))]
-    repo: String,
-
     #[clap(subcommand)]
     commands: Commands,
 }
 
+fn setup() {
+    let file_path = Path::new("/data/adb/mmrl/repos.list"); // Replace with the desired file path
+
+    if !file_path.exists() {
+        // Create all directories in the path if they don't exist
+        if let Some(parent_dir) = file_path.parent() {
+            if !parent_dir.exists() {
+                if let Err(err) = fs::create_dir_all(parent_dir) {
+                    eprintln!("Error creating directories: {}", err);
+                    return;
+                }
+            }
+        }
+
+        // Create the file
+        let mut file = match File::create(&file_path) {
+            Ok(file) => file,
+            Err(err) => {
+                eprintln!("Error creating file: {}", err);
+                return;
+            }
+        };
+
+        // You can write to the file if needed
+        if let Err(err) = writeln!(file, "https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json;") {
+            eprintln!("Error writing to file: {}", err);
+        }
+    }
+}
+
 #[tokio::main]
 async fn main() {
+    setup();
     let client = reqwest::Client::new();
     let args = Args::parse();
-
-    let response = client.get(args.repo).send().await.unwrap();
-
-    let json: Repo = response.json().await.unwrap();
-
-    println!("\nSelected Repo: {}\n", json.name);
-    // println!("Root manager: {}\n", &get_root_manager());
+    let mut modules: Vec<Module> = vec![];
+    let mut file = File::open("example.txt").unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents).unwrap();
+    println!("Available repos:");
+    for repo in contents.split(";") {
+        let response = client.get(repo).send().await.unwrap();
+        let mut json: Repo = response.json().await.unwrap();
+        println!("{}", json.name);
+        modules.append(&mut json.modules);
+    }
 
     match args.commands {
         Commands::Info { ids } => {
             for id in ids {
-                info(&json, id).await;
+                info(&modules, id).await;
             }
             exit(0);
         }
@@ -117,7 +156,7 @@ async fn main() {
         }
         Commands::Search { commands } => match commands {
             SearchCommands::All { query } => {
-                search(json.clone(), |module| {
+                search(modules.clone(), |module| {
                     module.id.to_lowercase().contains(&query.to_lowercase())
                         || module.name.to_lowercase().contains(&query.to_lowercase())
                         || module
@@ -134,28 +173,28 @@ async fn main() {
                 exit(0);
             }
             SearchCommands::Id { query } => {
-                search(json.clone(), |module| {
+                search(modules.clone(), |module| {
                     module.id.to_lowercase().contains(&query.to_lowercase())
                 })
                 .await;
                 exit(0);
             }
             SearchCommands::Name { query } => {
-                search(json.clone(), |module| {
+                search(modules.clone(), |module| {
                     module.name.to_lowercase().contains(&query.to_lowercase())
                 })
                 .await;
                 exit(0);
             }
             SearchCommands::Author { query } => {
-                search(json.clone(), |module| {
+                search(modules.clone(), |module| {
                     module.author.to_lowercase().contains(&query.to_lowercase())
                 })
                 .await;
                 exit(0);
             }
             SearchCommands::Description { query } => {
-                search(json.clone(), |module| {
+                search(modules.clone(), |module| {
                     module
                         .description
                         .to_lowercase()
@@ -165,7 +204,7 @@ async fn main() {
                 exit(0);
             }
             SearchCommands::Version { query } => {
-                search(json.clone(), |module| {
+                search(modules.clone(), |module| {
                     module
                         .version
                         .to_lowercase()
@@ -175,7 +214,7 @@ async fn main() {
                 exit(0);
             }
             SearchCommands::License { query } => {
-                search(json.clone(), |module| {
+                search(modules.clone(), |module| {
                     module
                         .track
                         .license
@@ -186,9 +225,9 @@ async fn main() {
                 exit(0);
             }
         },
-        Commands::Install { yes, requires,  ids } => {
+        Commands::Install { yes, requires, ids } => {
             for id in ids {
-                install(client.clone(), yes, requires,  &json, id).await;
+                install(client.clone(), yes, requires, &modules, id).await;
             }
             exit(0);
         }
@@ -256,7 +295,7 @@ async fn main() {
         //         }
         Commands::Download { ids } => {
             for id in ids {
-                download(client.clone(), &json, id).await;
+                download(client.clone(), &modules, id).await;
             }
             exit(0);
         }

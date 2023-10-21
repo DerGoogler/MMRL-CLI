@@ -3,7 +3,7 @@ extern crate serde_ini;
 
 use crate::utils::{confirm, download_from_url, get_last, get_mmrl_json, is_url};
 use crate::android_root::{get_downloads_dir, get_install_cli};
-use crate::repo::{find_module, find_version, get_id_details, Repo};
+use crate::repo::{find_module, find_version, get_id_details, Module};
 use reqwest::Client;
 use async_recursion::async_recursion;
 use std::io::{BufRead, BufReader, Error, ErrorKind};
@@ -16,7 +16,7 @@ async fn check_requires(
     install_requires: bool,
     client: Client,
     yes: bool,
-    json: &Repo,
+    modules: &Vec<Module>,
 ) {
     let mini = get_mmrl_json(&path);
 
@@ -30,7 +30,7 @@ async fn check_requires(
         if !(dep_path_update.exists() || dep_path.exists()) {
             if install_requires {
                 println!("Install requires");
-                install(client.clone(), yes, install_requires,  json, req).await;
+                install(client.clone(), yes, install_requires,  modules, req).await;
             } else {
                 println!("This module requires {} to be installed", req.clone());
                 exit(1)
@@ -40,11 +40,11 @@ async fn check_requires(
 }
 
 #[async_recursion]
-pub async fn install(client: Client, yes: bool, requires: bool, json: &Repo, id: String) {
+pub async fn install(client: Client, yes: bool, requires: bool, modules: &Vec<Module>, id: String) {
     let _url = &id.to_owned()[..];
     if !is_url(_url) {
         let (_id, _ver) = get_id_details(id);
-        let module = find_module(&json, _id.clone());
+        let module = find_module(&modules, _id.clone());
         let version = find_version(module.versions.clone(), _ver);
 
         let path = &[
@@ -61,7 +61,7 @@ pub async fn install(client: Client, yes: bool, requires: bool, json: &Repo, id:
         println!("Version: {}", &version.version);
 
         download_from_url(client.clone(), version.zip_url, module.name, path).await;
-        check_requires(path.clone(), requires, client.clone(), yes, json).await;
+        check_requires(path.clone(), requires, client.clone(), yes, modules).await;
 
         let success = yes || confirm("Do you want to continue [y/N]? ");
 
@@ -94,7 +94,7 @@ pub async fn install(client: Client, yes: bool, requires: bool, json: &Repo, id:
         ]
         .join("/");
         download_from_url(client.clone(), id.clone(), name.unwrap(), path).await;
-        check_requires(path.clone(), requires, client.clone(), yes, json).await;
+        check_requires(path.clone(), requires, client.clone(), yes, modules).await;
 
         println!("Info not availabe in url install");
         let success = yes || confirm("\nDo you want to continue [y/N]? ");

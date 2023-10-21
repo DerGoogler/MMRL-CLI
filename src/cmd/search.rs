@@ -1,8 +1,8 @@
-use crate::repo::{Module, Repo};
+use crate::repo::Module;
 
-pub async fn search(json: Repo, cb: impl Fn(&Module) -> bool) {
+pub async fn search(modules: Vec<Module>, cb: impl Fn(&Module) -> bool) {
     print!("\x1B[1mFound these modules:\x1B[0m\n\n");
-    for module in json.modules {
+    for module in modules {
         let m = module.clone();
         if cb(&m) {
             println!(
