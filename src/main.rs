@@ -32,6 +32,7 @@ enum SearchCommands {
 enum Commands {
     #[command(arg_required_else_help = true, aliases = &["sup", "up"])]
     Upself {
+        /// Skip confirm
         #[arg(short, long)]
         yes: bool,
         /// Example: 0.1.0
@@ -56,8 +57,12 @@ enum Commands {
     },
     #[command(arg_required_else_help = true,  aliases = &["add", "get", "fetch"])]
     Install {
+        /// Skip confirm
         #[arg(short, long)]
         yes: bool,
+        /// Also install requires of a module
+        #[arg(short, long)]
+        requires: bool,
         /// Installs selected modules
         ids: Vec<String>,
     },
@@ -181,9 +186,9 @@ async fn main() {
                 exit(0);
             }
         },
-        Commands::Install { yes, ids } => {
+        Commands::Install { yes, requires,  ids } => {
             for id in ids {
-                install(client.clone(), yes, &json, id).await;
+                install(client.clone(), yes, requires,  &json, id).await;
             }
             exit(0);
         }
