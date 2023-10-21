@@ -6,28 +6,20 @@ MMRL comes now as command line interface, with multi module install support!
 
 You can use any repo you want, the only requirement it that the repo supports the [MRepo-Format](https://github.com/ya0211/magisk-modules-repo-util)
 
-You can load another repo with
-```shell
-mmrl --repo "https://apt.izzysoft.de/magisk/json/modules.json" <OPT> <COMMAND>
+Edit `/data/adb/mmrl/repos.json`
+
+```json
+[
+	"https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json",
+	"https://apt.izzysoft.de/magisk/json/modules.json"
+]
 ```
 
 Install a module with it
 
 ```shell
 # Install aliases are "add" and "get"
-mmrl --repo "https://apt.izzysoft.de/magisk/json/modules.json" install app-data-file-exec
-```
-
-Or just create a binary, `/system/bin/mmrl-izzy`
-
-```shell
-#!/system/bin/sh
-mmrl --repo "https://apt.izzysoft.de/magisk/json/modules.json" @$
-```
-
-then
-```shell
-mmrl-izzy install app-data-file-exec data_isolation_support # supports multi module install
+mmrl install app-data-file-exec data_isolation_support
 ```
 
 ## Get informations
@@ -36,10 +28,7 @@ The MMRL CLI also supports getting infos of the module
 
 just run
 ```shell
-mmrl info mkshrc
-
-# or
-mmrl-izzy info app-data-file-exec
+mmrl info mkshrc node_on_android
 ```
 
 
@@ -49,18 +38,12 @@ Wanna search some module? You can do it.
 
 ```shell
 mmrl search id node # mmrl lookup all "hide user"
-
-# or 
-mmrl-izzy search all aosp
 ```
 
 Get all filter
 
 ```shell
 mmrl search 
-
-# or
-mmrl-izzy search
 ```
 
 ## Downloading
