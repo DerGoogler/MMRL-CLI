@@ -3,7 +3,6 @@ extern crate serde_ini;
 
 use crate::utils::{confirm, download_from_url, get_last, get_mmrl_json, is_url};
 use crate::android_root::{get_downloads_dir, get_install_cli};
-use crate::cmd::info::info;
 use crate::repo::{find_module, find_version, get_id_details, Repo};
 use reqwest::Client;
 use async_recursion::async_recursion;
@@ -45,7 +44,6 @@ pub async fn install(client: Client, yes: bool, requires: bool, json: &Repo, id:
     let _url = &id.to_owned()[..];
     if !is_url(_url) {
         let (_id, _ver) = get_id_details(id);
-        info(json, _id.clone()).await;
         let module = find_module(&json, _id.clone());
         let version = find_version(module.versions.clone(), _ver);
 
@@ -60,12 +58,12 @@ pub async fn install(client: Client, yes: bool, requires: bool, json: &Repo, id:
         .join("/");
 
         println!("Downloading {}", module.name);
-        println!("Version: {}\n", &version.version);
+        println!("Version: {}", &version.version);
 
         download_from_url(client.clone(), version.zip_url, module.name, path).await;
         check_requires(path.clone(), requires, client.clone(), yes, json).await;
 
-        let success = yes || confirm("\nDo you want to continue [y/N]? ");
+        let success = yes || confirm("Do you want to continue [y/N]? ");
 
         if success {
             let (bin, args) = get_install_cli(&path);
