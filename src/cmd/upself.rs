@@ -5,7 +5,7 @@ use std::io::{BufRead, BufReader, Error, ErrorKind};
 use std::process::{Command, Stdio};
 
 pub async fn upself(client: Client, version: String, yes: bool) {
-    let zip_url = format!("https://github.com/DerGoogler/MMRL-CLI/releases/download/v0.1.0/mmrl-{}-module-aarch64.zip", version);
+    let zip_url = format!("https://github.com/DerGoogler/MMRL-CLI/releases/download/v{}/mmrl-{}-module-aarch64.zip", version, version);
 
     let path = &[
         get_downloads_dir(),
