@@ -21,7 +21,7 @@ fn check_requires(path: String) {
         let dep_path_update = Path::new("/data/adb/modules_update")
             .join(req.clone())
             .join("module.prop");
-        if !dep_path_update.exists() || !dep_path.exists() {
+        if !(dep_path_update.exists() || dep_path.exists()) {
             println!("This module requires {} to be installed", req.clone());
             exit(1)
         }
