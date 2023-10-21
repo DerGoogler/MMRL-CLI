@@ -85,6 +85,7 @@ pub async fn install(client: Client, yes: bool, json: &Repo, id: String) {
         download_from_url(client, id.clone(), name.unwrap(), path).await;
         check_requires(path.clone());
 
+        println!("Info not availabe in url install");
         let success = yes || confirm("\nDo you want to continue [y/N]? ");
 
         if success {
