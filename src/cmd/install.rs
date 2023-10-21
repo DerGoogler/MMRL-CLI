@@ -1,7 +1,7 @@
 extern crate serde;
 extern crate serde_ini;
 
-use crate::utils::{confirm, download_from_url, get_mmrl_json, is_url};
+use crate::utils::{confirm, download_from_url, get_last, get_mmrl_json, is_url};
 
 use crate::android_root::{get_downloads_dir, get_install_cli};
 use crate::cmd::info::info;
@@ -21,7 +21,7 @@ fn check_requires(path: String) {
         let dep_path_update = Path::new("/data/adb/modules_update")
             .join(req.clone())
             .join("module.prop");
-        if !dep_path_update.exists() || !dep_path.exists(){
+        if !dep_path_update.exists() || !dep_path.exists() {
             println!("This module requires {} to be installed", req.clone());
             exit(1)
         }
@@ -29,7 +29,8 @@ fn check_requires(path: String) {
 }
 
 pub async fn install(client: Client, yes: bool, json: &Repo, id: String) {
-    if !is_url(&id.to_owned()[..]) {
+    let _url = &id.to_owned()[..];
+    if !is_url(_url) {
         let (_id, _ver) = get_id_details(id);
         info(json, _id.clone()).await;
         let module = find_module(&json, _id.clone());
@@ -75,12 +76,13 @@ pub async fn install(client: Client, yes: bool, json: &Repo, id: String) {
             exit(0);
         }
     } else {
+        let name = get_last(_url);
         let path = &[
             get_downloads_dir(),
-            ["URL-File".to_string(), "zip".to_string()].join("."),
+            [name.clone().unwrap().to_string(), "zip".to_string()].join("."),
         ]
         .join("/");
-        download_from_url(client, id.clone(), id, path).await;
+        download_from_url(client, id.clone(), name.unwrap(), path).await;
         check_requires(path.clone());
 
         let success = yes || confirm("\nDo you want to continue [y/N]? ");

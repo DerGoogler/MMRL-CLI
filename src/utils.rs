@@ -1,7 +1,7 @@
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
-use reqwest::Client;
+use reqwest::{Client, Url};
 use std::cmp::min;
 use std::fs::File;
 use std::io;
@@ -56,6 +56,16 @@ pub fn confirm(msg: &str) -> bool {
             }
         }
     }
+}
+
+pub fn get_last(url: &str) -> Result<String, &str> {
+    Url::parse(url)
+        .map_err(|_| "Unable to parse")?
+        .path_segments()
+        .ok_or("No segments")?
+        .last()
+        .ok_or("No items")
+        .map(String::from)
 }
 
 pub async fn download_from_url(client: Client, url: String, name: String, path: &String) -> String {
