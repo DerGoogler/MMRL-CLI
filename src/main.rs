@@ -11,7 +11,7 @@ use crate::repo::Module;
 
 use clap::{Parser, Subcommand};
 use repo::Repo;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::{
     fs::{self, File},
     path::Path,
@@ -101,8 +101,10 @@ struct Args {
     commands: Commands,
 }
 
+const REPOS_SOURCE: &str = "/data/adb/mmrl/repos.json";
+
 fn setup() {
-    let file_path = Path::new("/data/adb/mmrl/repos.list"); // Replace with the desired file path
+    let file_path = Path::new(REPOS_SOURCE); // Replace with the desired file path
 
     if !file_path.exists() {
         // Create all directories in the path if they don't exist
@@ -125,33 +127,44 @@ fn setup() {
         };
 
         // You can write to the file if needed
-        if let Err(err) = writeln!(file, "https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json;") {
+        if let Err(err) = writeln!(file, "[\n\t\"https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json\"\n]") {
             eprintln!("Error writing to file: {}", err);
         }
     }
 }
 
+async fn fetch_repos(url: String) -> Result<Repo, reqwest::Error> {
+    let response = reqwest::get(url).await?;
+    let body = response.json().await?;
+    Ok(body)
+}
+
 #[tokio::main]
 async fn main() {
     setup();
-    let client = reqwest::Client::new();
+    let client = reqwest::Client::builder().build().unwrap();
     let args = Args::parse();
     let mut modules: Vec<Module> = vec![];
-    let mut file = File::open("example.txt").unwrap();
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
-    println!("Available repos:");
-    for repo in contents.split(";") {
-        let response = client.get(repo).send().await.unwrap();
-        let mut json: Repo = response.json().await.unwrap();
-        println!("{}", json.name);
-        modules.append(&mut json.modules);
+
+    let file = File::open(REPOS_SOURCE).expect("file should open read only");
+    let contents: Vec<String> = serde_json::from_reader(file).unwrap();
+
+    let mut tasks = vec![];
+
+    for url in contents {
+        let task = tokio::spawn(fetch_repos(url));
+        tasks.push(task);
+    }
+
+    for task in tasks {
+        let result = task.await.unwrap();
+        modules.append(&mut result.unwrap().modules);
     }
 
     match args.commands {
         Commands::Info { ids } => {
             for id in ids {
-                info(&modules, id).await;
+                info(&modules.clone(), id).await;
             }
             exit(0);
         }

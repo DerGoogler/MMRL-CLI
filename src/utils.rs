@@ -1,7 +1,8 @@
 use futures_util::StreamExt;
 use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
-use reqwest::{Client, Url};
+use reqwest::Client;
+use url::Url;
 use std::cmp::min;
 use std::fs::File;
 use std::io;
