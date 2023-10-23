@@ -9,6 +9,7 @@ use crate::cmd::{
 };
 use crate::repo::Module;
 
+use android_root::module_state;
 use clap::{Parser, Subcommand};
 use repo::Repo;
 use std::io::Write;
@@ -79,18 +80,18 @@ enum Commands {
         /// Installs selected modules
         ids: Vec<String>,
     },
-    // Enable {
-    //     /// Enabled selected modules
-    //     ids: Vec<String>,
-    // },
-    // Disable {
-    //     /// Disabled selected modules
-    //     ids: Vec<String>,
-    // },
-    // Remove {
-    //     /// Remove selected modules
-    //     ids: Vec<String>,
-    // },
+    Enable {
+        /// Enabled selected modules
+        ids: Vec<String>,
+    },
+    Disable {
+        /// Disabled selected modules
+        ids: Vec<String>,
+    },
+    Remove {
+        /// Remove selected modules
+        ids: Vec<String>,
+    },
 }
 
 /// Magisk Module Repo Loader CLI
@@ -249,68 +250,31 @@ async fn main() {
             }
             exit(0);
         }
-        //         Commands::Enable { ids } => {
-        //              let mut some_disabled= false;
-        //             for id in ids {
-        //                 let module = find_module(json.clone(), id);
-        //                 let disable = &format!("/data/adb/modules/{}/disable", module.id);
-        //                 if !Path::new(&disable).exists() {
-        //                     if !File::create(disable).is_err() {
-        //                         some_disabled = true;
-        //                         println!("{} has been disabled.", module.name);
-        //                     }
-        //                 }
-        //             }
-        //             if !some_disabled {
-        //                 println!("Nothing were disabled");
-        //             }
-        //         }
-        // Commands::Disable { ids } => {
-        //     let mut some_disabled= false;
-        //     for id in ids {
-        //         let module = find_module(&json, id);
-        //         let disable = Path::new("/data/abd/modules").join(module.id).join("disable");
-        //         if !disable.exists() {
-        //             let mut f = File::create(disable).unwrap();
-        //                 match f.write_all(b"") {
-        //                     Ok(addr) => {
-        //                         some_disabled = true;
-        //                         println!("{} will be removed.", module.name);
-        //                     },
-        //                     Err(err) => {
-        //                         println!("{}", err);
-        //                         exit(1);
-        //                     },
-        //                 }
-        //         }
-        //     }
-        //     if !some_disabled {
-        //         println!("Nothing were disabled");
-        //     }
-        // }
-        //         Commands::Remove { ids } => {
-        //             let mut some_removed= false;
-        //             for id in ids {
-        //                 let module = find_module(&json, id);
+        Commands::Enable { ids } => {
+            for id in ids {
+                let base_path = Path::new("/data/adb/modules").join(id);
+                let disable = base_path.join("disable");
+                let remove = base_path.join("remove");
 
-        // //                 let remove = Path::new("/data/adb/modules/");
+                if disable.exists() {
+                    fs::remove_file(disable).expect("File delete failed");
+                }
 
-        // //                 let gg = remove.join(module.id).join("remove");
-        // // println!("{:?}", gg);
-        //                 // if !remove.exists() {
-        //                 //     match fs::write(remove, b"Lorem ipsum") {
-        //                 //         Ok(addr) => {
-        //                 //             some_removed = true;
-        //                 //             println!("{} will be removed.", module.name);
-        //                 //         },
-        //                 //         Err(_) => (),
-        //                 //     }
-        //                 // }
-        //             }
-        //             if !some_removed {
-        //                 println!("Nothing were removed");
-        //             }
-        //         }
+                if remove.exists() {
+                    fs::remove_file(remove).expect("File delete failed");
+                }
+            }
+        }
+        Commands::Disable { ids } => {
+            for id in ids {
+                module_state(id, "disable");
+            }
+        }
+        Commands::Remove { ids } => {
+            for id in ids {
+                module_state(id, "remove");
+            }
+        }
         Commands::Download { ids } => {
             for id in ids {
                 download(client.clone(), &modules, id).await;

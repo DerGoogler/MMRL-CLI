@@ -1,8 +1,12 @@
 use std::{
-    env, io,
+    env,
+    fs::File,
+    io::{self, Write},
     path::{Path, PathBuf},
     process::exit,
 };
+
+use ini::Ini;
 
 #[cfg(target_os = "linux")]
 pub fn get_downloads_dir() -> String {
@@ -78,5 +82,27 @@ pub fn get_install_cli(path: &str) -> (&str, Vec<&str>) {
     } else {
         println!("Unable to determine install cli");
         exit(0)
+    }
+}
+
+pub fn module_state(id: String, state: &str) {
+    let base_path = Path::new("/data/adb/modules").join(id);
+    let mod_state = base_path.join(state);
+
+    let moduleprop = base_path.join("module.prop");
+
+    if base_path.exists() && moduleprop.exists() && !mod_state.exists() {
+        let conf = Ini::load_from_file(moduleprop.to_str().unwrap()).unwrap();
+        let prop = conf.section(None::<String>).unwrap();
+        let mut f = File::create(mod_state).unwrap();
+        match f.write_all(b"") {
+            Ok(_addr) => {
+                println!("{} will be {}d.", prop.get("name").unwrap(), state);
+            }
+            Err(err) => {
+                println!("{}", err);
+                exit(1);
+            }
+        }
     }
 }
