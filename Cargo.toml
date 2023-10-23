@@ -1,7 +1,7 @@
 [package]
 name = "mmrl"
 description = "MMRL comes now as command line interface, with multi module install support!"
-version = "0.1.3"
+version = "0.2.3"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
