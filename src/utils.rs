@@ -10,13 +10,12 @@ use std::cmp::min;
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
+use std::io::{stdout, Seek, Write};
+use std::iter::Iterator;
 use std::path::Path;
 use url::Url;
-use zip::ZipArchive;
-
-use std::io::{Seek, Write};
-use std::iter::Iterator;
 use zip::write::FileOptions;
+use zip::ZipArchive;
 
 use walkdir::DirEntry;
 
@@ -47,9 +46,9 @@ pub fn get_mmrl_json(path: &str) -> Result<MMRLJSON, serde_json::Error> {
 
 pub fn confirm(msg: &str) -> bool {
     loop {
-        println!("{}", msg);
+        print!("{}", msg);
         let mut input = String::new();
-
+        io::stdout().flush().unwrap();
         io::stdin()
             .read_line(&mut input)
             .expect("Failed to read input");
