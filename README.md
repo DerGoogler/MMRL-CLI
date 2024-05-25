@@ -2,6 +2,10 @@
 
 MMRL comes now as command line interface, with multi module install support!
 
+<img alt="GitHub all releases" src="https://img.shields.io/github/downloads/DerGoogler/MMRL-CLI/total">
+
+<a href="https://mmrl.dergoogler.com/?module=mmrl"><img height="45px" alt="Get it on MMRL" src="https://mmrl.dergoogler.com/assets/MMRL-Badge.svg"></a>
+
 ## Repositoreis
 
 You can use any repo you want, the only requirement it that the repo supports the [MRepo-Format](https://github.com/ya0211/magisk-modules-repo-util)
