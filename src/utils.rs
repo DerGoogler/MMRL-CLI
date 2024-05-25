@@ -89,11 +89,14 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
         .ok_or(format!("Failed to get content length from '{}'", url))
         .unwrap();
 
-    let pb = ProgressBar::new(total_size);
-    pb.set_style(ProgressStyle::default_bar()
-.template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})").unwrap()
-.progress_chars("#>-"));
-    pb.set_message(format!("Downloading {}", name));
+    // let pb = ProgressBar::new(total_size);
+    // pb.set_style(ProgressStyle::default_bar()
+    // .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})").unwrap()
+    // .progress_chars("#>-"));
+    // pb.set_message(format!("Downloading {}", name));
+    
+    println!("Downloading {}", name);
+
 
     // download chunks
     let mut file = File::create(path)
@@ -111,10 +114,12 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
             .or(Err(format!("Error while writing to file")));
         let new = min(downloaded + (chunk.len() as u64), total_size);
         downloaded = new;
-        pb.set_position(new);
+        // pb.set_position(new);
     }
 
-    pb.finish_with_message(format!("Downloaded {} to {}", name, path));
+    // pb.finish_with_message(format!("Downloaded {} to {}", name, path));
+
+    println!("Downloaded {} to {}", name, path);
 
     return path.to_string();
 }
