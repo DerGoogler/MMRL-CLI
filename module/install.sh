@@ -1,3 +1,8 @@
+SKIPMOUNT=false
+PROPFILE=false
+POSTFSDATA=false
+LATESTARTSERVICE=false
+
 print_modname() {
     ui_print "    __  _____  _______  __ "
     ui_print "   /  |/  /  |/  / __ \/ / "
@@ -18,7 +23,7 @@ on_install() {
 
 set_permissions() {
     # The following is the default rule, DO NOT remove
-    set_perm_recursive "$MODPATH" 0 0 0755 0644
+    set_perm_recursive $MODPATH 0 0 0755 0644
     set_perm "$MODPATH/system/bin/mmrl" 0 0 0755
     set_perm "$MODPATH/system/bin/mrepo" 0 0 0755
     set_perm "$MODPATH/system/bin/foxmmm" 0 0 0755
