@@ -128,7 +128,7 @@ fn setup() {
         };
 
         // You can write to the file if needed
-        if let Err(err) = writeln!(file, "[\n\t\"https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json\"\n]") {
+        if let Err(err) = writeln!(file, "[\n\t\"https://gr.dergoogler.com/gmr/json/modules.json\"\n]") {
             eprintln!("Error writing to file: {}", err);
         }
     }
