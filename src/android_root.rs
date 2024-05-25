@@ -1,3 +1,5 @@
+use regex::Regex;
+use std::fs;
 use std::{
     env,
     fs::File,
@@ -37,28 +39,46 @@ pub fn check_paths(paths: Vec<&str>) -> Result<bool, io::Error> {
     Ok(false)
 }
 
+struct Searcher {
+    regex: Regex,
+}
+
+impl Searcher {
+    fn new(pattern: &str) -> Searcher {
+        Searcher {
+            regex: Regex::new(pattern).unwrap(),
+        }
+    }
+
+    fn search(&self, contents: &str) -> bool {
+        self.regex.is_match(contents)
+    }
+}
+
+fn mount_detect(searcher: &Searcher) -> bool {
+    let path = Path::new("/proc/self/mounts");
+
+    if path.exists() {
+        if let Ok(contents) = fs::read_to_string(path) {
+            searcher.search(&contents)
+        } else {
+            false
+        }
+    } else {
+        false
+    }
+}
+
 pub fn has_magisk_su() -> bool {
-    let msu_paths = vec![
-        "/system/bin/magisk",
-        "/data/adb/magisk.db",
-        "/data/adb/magisk/busybox",
-        "/data/adb/magisk/magisk64",
-        "/data/adb/magisk/magiskboot",
-        "/data/adb/magisk/magiskinit",
-        "/data/adb/magisk/magiskpolicy",
-    ];
-    return check_paths(msu_paths).unwrap();
+    return mount_detect(&Searcher::new(r"(magisk|core\/mirror|core\/img)"));
 }
 
 pub fn has_kernel_su() -> bool {
-    let ksu_paths = vec![
-        "/data/adb/ksud",
-        "/data/adb/ksu/modules.img",
-        "/data/adb/ksu/bin/busybox",
-        "/data/adb/ksu/bin/ksud",
-        "/data/adb/ksu/bin/resetprop",
-    ];
-    return check_paths(ksu_paths).unwrap();
+    return mount_detect(&Searcher::new(r"(KSU|KernelSU)"));
+}
+
+pub fn has_apatch_su() -> bool {
+    return mount_detect(&Searcher::new(r"(APD|APatch)"));
 }
 
 pub fn get_root_manager() -> String {
@@ -66,6 +86,8 @@ pub fn get_root_manager() -> String {
         return String::from("Magisk");
     } else if has_kernel_su() {
         return String::from("KernelSU");
+    } else if has_apatch_su() {
+        return String::from("APatchSU");
     } else {
         return String::from("Unknown");
     }
@@ -74,13 +96,16 @@ pub fn get_root_manager() -> String {
 pub fn get_install_cli(path: &str) -> (&str, Vec<&str>) {
     let msu = "/system/bin/magisk";
     let ksu = "/data/adb/ksu/bin/ksud";
+    let asu = "/data/adb/ap/bin/apd";
 
     if Path::new(msu).exists() {
         return (msu, vec!["--install-module", path]);
     } else if Path::new(ksu).exists() {
         return (ksu, vec!["module", "install", path]);
+    } else if Path::new(asu).exists() {
+        return (asu, vec!["module", "install", path]);
     } else {
-        println!("Unable to determine install cli");
+        println!("! Unable to determine install cli");
         exit(0)
     }
 }
