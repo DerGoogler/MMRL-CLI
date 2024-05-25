@@ -41,6 +41,7 @@ pub struct Track {
     pub homepage: String,
     pub source: String,
     pub support: String,
+    pub require: Option<Vec<String>>,
     pub donate: String,
 }
 

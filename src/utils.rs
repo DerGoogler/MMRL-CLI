@@ -13,6 +13,7 @@ use std::io::prelude::*;
 use std::io::{stdout, Seek, Write};
 use std::iter::Iterator;
 use std::path::Path;
+use std::process::exit;
 use url::Url;
 use zip::write::FileOptions;
 use zip::ZipArchive;
@@ -82,11 +83,12 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
         .get(url.clone())
         .send()
         .await
-        .or(Err(format!("Failed to GET from '{}'", url)))
+        .or(Err(format!("! Failed to GET from '{}'", url)))
         .unwrap();
+
     let total_size = res
         .content_length()
-        .ok_or(format!("Failed to get content length from '{}'", url))
+        .ok_or(format!("! Failed to get content length from '{}'", url))
         .unwrap();
 
     // let pb = ProgressBar::new(total_size);
@@ -94,24 +96,32 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
     // .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})").unwrap()
     // .progress_chars("#>-"));
     // pb.set_message(format!("Downloading {}", name));
-    
-    println!("Downloading {}", name);
 
+    println!("- Downloading {}", name);
 
     // download chunks
-    let mut file = File::create(path)
-        .or(Err(format!("Failed to create file '{}'", path)))
-        .unwrap();
+    let mut file = File::create(path);
+
     let mut downloaded: u64 = 0;
     let mut stream = res.bytes_stream();
 
     while let Some(item) = stream.next().await {
-        let chunk = item
-            .or(Err(format!("Error while downloading file")))
-            .unwrap();
-        let _ = file
-            .write_all(&chunk)
-            .or(Err(format!("Error while writing to file")));
+        let chunk = match item {
+            Ok(c) => c,
+            Err(e) => {
+                println!("! Error while downloading file");
+                exit(2);
+            }
+        };
+
+        let _ = match file {
+            Ok(ref mut f) => f.write_all(&chunk),
+            Err(e) => {
+                println!("! Error while writing to file");
+                exit(3)
+            }
+        };
+
         let new = min(downloaded + (chunk.len() as u64), total_size);
         downloaded = new;
         // pb.set_position(new);
@@ -119,7 +129,7 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
 
     // pb.finish_with_message(format!("Downloaded {} to {}", name, path));
 
-    println!("Downloaded {} to {}", name, path);
+    println!("- Downloaded {} to {}", name, path);
 
     return path.to_string();
 }
