@@ -14,7 +14,7 @@ Install a module with it
 
 ```shell
 # Install aliases are "add" and "get"
-mmrl install explore app-data-file-exec data_isolation_support
+mmrl install app-data-file-exec data_isolation_support
 ```
 
 ## Get informations
@@ -54,7 +54,7 @@ mmrl download mkshrc node_on_android # --version 152
 Maybe simple...
 
 ```shell
-mmrl install explore mkshrc@1.3.4 node_on_android
+mmrl install mkshrc@1.3.4 node_on_android
 ```
 
 ## Install Viper4Android
@@ -62,7 +62,7 @@ mmrl install explore mkshrc@1.3.4 node_on_android
 > Requires version `0.1.1`
 
 ```shell
-mmrl install explore -y "https://zackptg5.com/downloads/Audio-Modification-Library_v5.1.zip" "https://john-fawkes.com/Downloads/acp.zip" "https://github.com/AndroidAudioMods/ViPER4Android/releases/download/v0.5.0/V4A_Magisk_Module_0.5.0.zip"
+mmrl install -y "https://zackptg5.com/downloads/Audio-Modification-Library_v5.1.zip" "https://john-fawkes.com/Downloads/acp.zip" "https://github.com/AndroidAudioMods/ViPER4Android/releases/download/v0.5.0/V4A_Magisk_Module_0.5.0.zip"
 ```
 
 # Dev
