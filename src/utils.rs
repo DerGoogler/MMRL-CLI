@@ -2,7 +2,6 @@ extern crate walkdir;
 extern crate zip;
 
 use futures_util::StreamExt;
-use indicatif::{ProgressBar, ProgressStyle};
 use regex::Regex;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -10,7 +9,7 @@ use std::cmp::min;
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
-use std::io::{stdout, Seek, Write};
+use std::io::{Seek, Write};
 use std::iter::Iterator;
 use std::path::Path;
 use std::process::exit;
@@ -91,12 +90,6 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
         .ok_or(format!("! Failed to get content length from '{}'", url))
         .unwrap();
 
-    // let pb = ProgressBar::new(total_size);
-    // pb.set_style(ProgressStyle::default_bar()
-    // .template("{msg}\n{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes} ({bytes_per_sec}, {eta})").unwrap()
-    // .progress_chars("#>-"));
-    // pb.set_message(format!("Downloading {}", name));
-
     println!("- Downloading {}", name);
 
     // download chunks
@@ -108,7 +101,7 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
     while let Some(item) = stream.next().await {
         let chunk = match item {
             Ok(c) => c,
-            Err(e) => {
+            Err(_e) => {
                 println!("! Error while downloading file");
                 exit(2);
             }
@@ -116,7 +109,7 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
 
         let _ = match file {
             Ok(ref mut f) => f.write_all(&chunk),
-            Err(e) => {
+            Err(_e) => {
                 println!("! Error while writing to file");
                 exit(3)
             }
@@ -124,10 +117,7 @@ pub async fn download_from_url(client: Client, url: String, name: String, path: 
 
         let new = min(downloaded + (chunk.len() as u64), total_size);
         downloaded = new;
-        // pb.set_position(new);
     }
-
-    // pb.finish_with_message(format!("Downloaded {} to {}", name, path));
 
     println!("- Downloaded {} to {}", name, path);
 

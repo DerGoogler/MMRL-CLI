@@ -3,58 +3,16 @@ extern crate serde_ini;
 
 use crate::android_root::{get_downloads_dir, get_install_cli};
 use crate::repo::{find_module, find_version, get_id_details, Module};
-use crate::utils::{confirm, download_from_url, get_last, get_mmrl_json, is_git, is_url, zip_dir};
+use crate::utils::{confirm, download_from_url, get_last, is_url};
 use async_recursion::async_recursion;
-use git2::Repository;
 use reqwest::Client;
-use std::fs::{self, File};
 use std::io::{BufRead, BufReader, Error, ErrorKind};
-use std::path::Path;
 use std::process::{exit, Command, Stdio};
-use walkdir::WalkDir;
-
-// #[async_recursion]
-// async fn check_requires(
-//     path: String,
-//     install_requires: bool,
-//     client: Client,
-//     yes: bool,
-//     modules: &Vec<Module>,
-// ) -> () {
-//     // let mini: Result<crate::utils::MMRLJSON, serde_json::Error>;
-
-//     // if _is_git {
-//     //     mini = match File::open(path) {
-//     //         Ok(file) => serde_json::from_reader(file),
-//     //         Err(..) => serde_json::from_str("{\"require\":[]}"),
-//     //     };
-//     // } else {
-//     //     mini = get_mmrl_json(&path);
-//     // }
-
-//     for req in mini.unwrap().require {
-//         let dep_path = Path::new("/data/adb/modules")
-//             .join(req.clone())
-//             .join("module.prop");
-//         let dep_path_update = Path::new("/data/adb/modules_update")
-//             .join(req.clone())
-//             .join("module.prop");
-//         if !(dep_path_update.exists() || dep_path.exists()) {
-//             if install_requires {
-//                 println!("Install requires");
-//                 install(client.clone(), yes, install_requires, modules, req).await;
-//             } else {
-//                 println!("This module requires {} to be installed", req.clone());
-//                 exit(1)
-//             }
-//         }
-//     }
-// }
 
 const METHOD_STORED: Option<zip::CompressionMethod> = Some(zip::CompressionMethod::Stored);
 
 #[async_recursion]
-pub async fn install(client: Client, yes: bool, requires: bool, modules: &Vec<Module>, id: String) {
+pub async fn install(client: Client, yes: bool, _requires: bool, modules: &Vec<Module>, id: String) {
     let _url = &id.to_owned()[..];
     if is_url(_url) {
         let name = get_last(_url);

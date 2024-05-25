@@ -5,7 +5,7 @@ pub mod cmd;
 pub mod repo;
 pub mod utils;
 use crate::cmd::{
-    download::download, info::info, install::install, search::search, upself::upself,
+    download::download, info::info, install::install, repo::add, search::search, upself::upself,
 };
 use crate::repo::Module;
 
@@ -38,6 +38,12 @@ enum SearchCommands {
 }
 
 #[derive(Debug, Subcommand)]
+enum RepoCommands {
+    #[command(arg_required_else_help = true)]
+    Add { url: Vec<String> },
+}
+
+#[derive(Debug, Subcommand)]
 enum Commands {
     /// Update MMRL CLI
     #[command(arg_required_else_help = true, aliases = &["sup", "up"])]
@@ -47,6 +53,12 @@ enum Commands {
         yes: bool,
         /// Example: 0.1.0
         version: String,
+    },
+    /// Add new repositories
+    #[command(arg_required_else_help = true, aliases = &["view"])]
+    Repo {
+        #[clap(subcommand)]
+        commands: RepoCommands,
     },
     /// View module infomation
     #[command(arg_required_else_help = true, aliases = &["view"])]
@@ -128,7 +140,10 @@ fn setup() {
         };
 
         // You can write to the file if needed
-        if let Err(err) = writeln!(file, "[\n\t\"https://gr.dergoogler.com/gmr/json/modules.json\"\n]") {
+        if let Err(err) = writeln!(
+            file,
+            "[\n\t\"https://gr.dergoogler.com/gmr/json/modules.json\"\n]"
+        ) {
             eprintln!("Error writing to file: {}", err);
         }
     }
@@ -163,6 +178,12 @@ async fn main() {
     }
 
     match args.commands {
+        Commands::Repo { commands } => match commands {
+            RepoCommands::Add { url } => {
+                add(url);
+                exit(0);
+            }
+        },
         Commands::Info { ids } => {
             for id in ids {
                 info(&modules.clone(), id).await;

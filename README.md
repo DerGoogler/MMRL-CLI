@@ -6,13 +6,8 @@ MMRL comes now as command line interface, with multi module install support!
 
 You can use any repo you want, the only requirement it that the repo supports the [MRepo-Format](https://github.com/ya0211/magisk-modules-repo-util)
 
-Edit `/data/adb/mmrl/repos.json`
-
-```json
-[
-	"https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json",
-	"https://apt.izzysoft.de/magisk/json/modules.json"
-]
+```shell
+mmrl repo add "https://apt.izzysoft.de/magisk/json/modules.json" "https://..." # ...
 ```
 
 Install a module with it
@@ -22,28 +17,15 @@ Install a module with it
 mmrl install app-data-file-exec data_isolation_support
 ```
 
-## Require modules 
-
-Create a `mmrl.json` file in your module root dir. 
-
-- `gcc_on_android` - will installed from a repo
-- `https://github.com/Googlers-Repo/gcc/releases/download/v1.0.0/gcc.zip` - will downloaded and installed
-
-```json
-{
-  "require": ["gcc_on_android", "https://github.com/Googlers-Repo/gcc/releases/download/v1.0.0/gcc.zip"]
-}
-```
-
 ## Get informations
 
 The MMRL CLI also supports getting infos of the module
 
 just run
+
 ```shell
 mmrl info mkshrc node_on_android
 ```
-
 
 ## Searching
 
@@ -56,7 +38,7 @@ mmrl search id node # mmrl lookup all "hide user"
 Get all filter
 
 ```shell
-mmrl search 
+mmrl search
 ```
 
 ## Downloading
@@ -85,7 +67,7 @@ mmrl install -y "https://zackptg5.com/downloads/Audio-Modification-Library_v5.1.
 
 # Dev
 
-## Error code 
+## Error code
 
 ```properties
 

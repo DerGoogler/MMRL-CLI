@@ -1,11 +1,15 @@
 use crate::android_root::{get_downloads_dir, get_install_cli};
-use crate::utils::{download_from_url, confirm};
+use crate::exit;
+use crate::utils::{confirm, download_from_url};
 use reqwest::Client;
 use std::io::{BufRead, BufReader, Error, ErrorKind};
 use std::process::{Command, Stdio};
 
 pub async fn upself(client: Client, version: String, yes: bool) {
-    let zip_url = format!("https://github.com/DerGoogler/MMRL-CLI/releases/download/v{}/mmrl-{}-module-aarch64.zip", version, version);
+    let zip_url = format!(
+        "https://github.com/DerGoogler/MMRL-CLI/releases/download/v{}/mmrl-{}-module-aarch64.zip",
+        version, version
+    );
 
     let path = &[
         get_downloads_dir(),
@@ -31,9 +35,15 @@ pub async fn upself(client: Client, version: String, yes: bool) {
 
         let reader = BufReader::new(stdout);
 
-        reader
-            .lines()
-            .filter_map(|line| line.ok())
-            .for_each(|line| println!("{}", line));
+        for line in reader.lines() {
+            match line {
+                Ok(ln) => println!("{}", ln),
+                Err(e) => {
+                    println!("{}", e);
+                    exit(500)
+                }
+            }
+        }
+        exit(0);
     }
 }
