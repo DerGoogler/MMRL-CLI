@@ -11,6 +11,7 @@ use crate::repo::Module;
 
 use android_root::module_state;
 use clap::{Parser, Subcommand};
+use cmd::install::install_local;
 use repo::Repo;
 use std::io::Write;
 use std::{
@@ -41,6 +42,19 @@ enum SearchCommands {
 enum RepoCommands {
     #[command(arg_required_else_help = true)]
     Add { url: Vec<String> },
+}
+
+#[derive(Debug, Subcommand)]
+enum InstallCommands {
+    /// Install a local module
+    #[command(arg_required_else_help = true,  aliases = &["ll", "lcl"])]
+    Local {
+        /// Skip confirm
+        #[arg(short, long)]
+        yes: bool,
+        /// Module ZIP location
+        path: Vec<String>,
+    },
 }
 
 #[derive(Debug, Subcommand)]
@@ -83,6 +97,8 @@ enum Commands {
     /// Install any module
     #[command(arg_required_else_help = true,  aliases = &["add", "get", "fetch"])]
     Install {
+        #[clap(subcommand)]
+        commands: Option<InstallCommands>,
         /// Skip confirm
         #[arg(short, long)]
         yes: bool,
@@ -180,7 +196,7 @@ async fn main() {
     match args.commands {
         Commands::Repo { commands } => match commands {
             RepoCommands::Add { url } => {
-                add(url);
+                add(url).await;
                 exit(0);
             }
         },
@@ -265,12 +281,25 @@ async fn main() {
                 exit(0);
             }
         },
-        Commands::Install { yes, requires, ids } => {
-            for id in ids {
-                install(client.clone(), yes, requires, &modules, id).await;
+        Commands::Install {
+            yes,
+            requires,
+            ids,
+            commands,
+        } => match commands {
+            Some(InstallCommands::Local { yes, path }) => {
+                for id in path {
+                    install_local(yes, id).await;
+                }
+                exit(0);
             }
-            exit(0);
-        }
+            None => {
+                for id in ids {
+                    install(client.clone(), yes, requires, &modules, id).await;
+                }
+                exit(0);
+            }
+        },
         Commands::Enable { ids } => {
             for id in ids {
                 let base_path = Path::new("/data/adb/modules").join(id);

@@ -12,7 +12,13 @@ use std::process::{exit, Command, Stdio};
 const METHOD_STORED: Option<zip::CompressionMethod> = Some(zip::CompressionMethod::Stored);
 
 #[async_recursion]
-pub async fn install(client: Client, yes: bool, _requires: bool, modules: &Vec<Module>, id: String) {
+pub async fn install(
+    client: Client,
+    yes: bool,
+    _requires: bool,
+    modules: &Vec<Module>,
+    id: String,
+) {
     let _url = &id.to_owned()[..];
     if is_url(_url) {
         let name = get_last(_url);
@@ -97,9 +103,39 @@ pub async fn install(client: Client, yes: bool, _requires: bool, modules: &Vec<M
                     }
                 }
             }
-            exit(0);
         } else {
             exit(0);
         }
+    }
+}
+
+pub async fn install_local(yes: bool, id: String) -> () {
+    let success = yes || confirm("Do you want to continue [y/N] ");
+
+    if success {
+        let (bin, args) = get_install_cli(&id);
+
+        let stdout = Command::new(bin)
+            .args(args)
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap()
+            .stdout
+            .ok_or_else(|| Error::new(ErrorKind::Other, "Could not capture standard output."))
+            .unwrap();
+
+        let reader = BufReader::new(stdout);
+
+        for line in reader.lines() {
+            match line {
+                Ok(ln) => println!("{}", ln),
+                Err(e) => {
+                    println!("{}", e);
+                    exit(500)
+                }
+            }
+        }
+    } else {
+        exit(0);
     }
 }
