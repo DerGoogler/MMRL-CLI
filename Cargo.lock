@@ -1050,7 +1050,7 @@ dependencies = [
 
 [[package]]
 name = "mmrl"
-version = "0.2.3"
+version = "0.3.3"
 dependencies = [
  "async-recursion",
  "clap",
