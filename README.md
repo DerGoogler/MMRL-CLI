@@ -28,11 +28,10 @@ Create a `mmrl.json` file in your module root dir.
 
 - `gcc_on_android` - will installed from a repo
 - `https://github.com/Googlers-Repo/gcc/releases/download/v1.0.0/gcc.zip` - will downloaded and installed
-- `https://github.com/Googlers-Repo/gcc.git` - downloads the repo, zipping it and installind it
 
 ```json
 {
-  "require": ["gcc_on_android", "https://github.com/Googlers-Repo/gcc/releases/download/v1.0.0/gcc.zip", "https://github.com/Googlers-Repo/gcc.git"]
+  "require": ["gcc_on_android", "https://github.com/Googlers-Repo/gcc/releases/download/v1.0.0/gcc.zip"]
 }
 ```
 
