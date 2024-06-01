@@ -69,6 +69,16 @@ mmrl install mkshrc@1.3.4 node_on_android
 mmrl install -y "https://zackptg5.com/downloads/Audio-Modification-Library_v5.1.zip" "https://john-fawkes.com/Downloads/acp.zip" "https://github.com/AndroidAudioMods/ViPER4Android/releases/download/v0.5.0/V4A_Magisk_Module_0.5.0.zip"
 ```
 
+# Screenshots
+
+<p>
+  <img src="assets/store_ready/1.png" width="32%" />
+  <img src="assets/store_ready/2.png" width="32%" />
+  <img src="assets/store_ready/3.png" width="32%" />
+  <img src="assets/store_ready/4.png" width="32%" />
+</p>
+
+
 # Dev
 
 ## Error code
