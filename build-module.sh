@@ -48,6 +48,9 @@ cp ../target/aarch64-linux-android/release/mmrl system/bin/mmrl
 
 FILE_NAME="$NAME-$VER-module-aarch64.zip"
 
+# convert files before zipping
+dos2unix *.sh
+
 zip -r "../target/$FILE_NAME" ./* -x "system/bin/placeholder"
 
 rm -rf "system/bin/mmrl" "CHANGELOG.md"
