@@ -1,7 +1,7 @@
 {
-    "version": "0.3.3",
-    "versionCode": "033",
+    "version": "0.3.4",
+    "versionCode": "034",
     "author": "Der_Googler",
     "rustVersion": "1.78.0",
-    "buildDate": "2024-05-25"
+    "buildDate": "2024-06-22"
 }

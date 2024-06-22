@@ -7,3 +7,6 @@ install: build
 
 module: build
 	bash build-module.sh
+
+nb-module:
+	bash build-module.sh

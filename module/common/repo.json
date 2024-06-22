@@ -1,0 +1,17 @@
+{
+    "support": "https://github.com/DerGoogler/MMRL-CLI/issues",
+    "donate": "https://github.com/sponsors/DerGoogler",
+    "cover": "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/assets/CLI-Banner.png",
+    "screenshots": [
+        "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/assets/store_ready/1.png",
+        "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/assets/store_ready/2.png",
+        "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/assets/store_ready/3.png",
+        "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/assets/store_ready/4.png"
+    ],
+    "categories": [
+        "Tools",
+        "System",
+        "Configurable"
+    ],
+    "readme": "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/README.md"
+}

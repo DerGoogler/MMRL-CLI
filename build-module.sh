@@ -1,7 +1,13 @@
 #!/bin/bash
 
+# run checks
+if ! command -v dos2unix >/dev/null; then
+    echo "Please install dos2unix (sudo apt-get install dos2unix)"
+    exit 1
+fi
+
 # Go to work dir
-cd module 
+cd module
 
 get_prop() { cat ./../Cargo.toml | grep -Po "(?<=^$1 = \")[^\"]*(?=\".*)"; }
 
@@ -9,11 +15,11 @@ NAME=$(get_prop name)
 VER=$(get_prop version)
 AUT=$(get_prop author)
 VER_CODE="${VER//./}"
-BUILD_DATE=`date "+%Y-%m-%d"`
+BUILD_DATE=$(date "+%Y-%m-%d")
 RUST_VER=$(rustc --version | grep -oP '\d+\.\d+\.\d+')
 
 # generate module.prop
-cat << EOF >module.prop
+cat <<EOF >module.prop
 id=$NAME
 name=MMRL CLI
 version=$VER
@@ -24,7 +30,7 @@ updateJson=https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/module/u
 EOF
 
 # generate update.json
-cat << EOF >update.json
+cat <<EOF >update.json
 {
     "version": "$VER",
     "versionCode": "$VER_CODE",
@@ -33,7 +39,7 @@ cat << EOF >update.json
 }
 EOF
 
-cat << EOF >system/usr/share/mmrl/mmrl/info.json
+cat <<EOF >system/usr/share/mmrl/config/mmrl/info.json
 {
     "version": "$VER",
     "versionCode": "$VER_CODE",
@@ -49,7 +55,10 @@ cp ../target/aarch64-linux-android/release/mmrl system/bin/mmrl
 FILE_NAME="$NAME-$VER-module-aarch64.zip"
 
 # convert files before zipping
-dos2unix *.sh
+dos2unix \
+    META-INF/com/google/android/update-binary \
+    META-INF/com/google/android/updater-script \
+    *.sh
 
 zip -r "../target/$FILE_NAME" ./* -x "system/bin/placeholder"
 
