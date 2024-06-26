@@ -13,6 +13,7 @@ use android_root::module_state;
 use clap::{Parser, Subcommand};
 use cmd::install::install_local;
 use repo::Repo;
+use serde_json::json;
 use std::io::Write;
 use std::{
     fs::{self, File},
@@ -181,16 +182,23 @@ async fn main() {
     let file = File::open(REPOS_SOURCE).expect("file should open read only");
     let contents: Vec<String> = serde_json::from_reader(file).unwrap();
 
-    let mut tasks = vec![];
+    let mut repos = vec![];
 
     for url in contents {
-        let task = tokio::spawn(fetch_repos(url));
-        tasks.push(task);
+        let repo = tokio::spawn(fetch_repos(url.clone()));
+        let result = repo.await.unwrap();
+
+        let _repo = match result {
+            Ok(data) => repos.push(data),
+            Err(_e) => {
+                repos.push(serde_json::from_str(r#"{ "name": "", "metadata": { "version": 666, "timestamp": 666 }, "modules": [] }"#).unwrap());
+                println!("! Unable to fetch \"{}\", pushed empty data", url);
+            }
+        };
     }
 
-    for task in tasks {
-        let result = task.await.unwrap();
-        modules.append(&mut result.unwrap().modules);
+    for mut repo in repos {
+        modules.append(&mut repo.modules);
     }
 
     match args.commands {

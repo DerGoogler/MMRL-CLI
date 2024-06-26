@@ -58,7 +58,7 @@ pub struct Version {
 pub(crate) fn find_module(modules: &Vec<Module>, id: String) -> Module {
     let module_exists = modules.iter().any(|m| m.id == id);
     if !module_exists {
-        eprintln!("Unable to find {}", id);
+        eprintln!("! Unable to find {}", id);
         exit(1);
     }
     let module_pos = modules.iter().position(|m| m.id == id).unwrap();
@@ -71,7 +71,7 @@ pub(crate) fn find_version(versions: Vec<Version>, version_name: String) -> Vers
     } else {
         let version_exists = versions.iter().any(|v| v.version == version_name);
         if !version_exists {
-            println!("Unable to find {}", version_name);
+            println!("! Unable to find {}", version_name);
             exit(1);
         }
         let version_pos = versions

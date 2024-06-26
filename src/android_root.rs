@@ -20,8 +20,8 @@ pub fn get_downloads_dir() -> String {
 
 pub fn is_mmrl() -> bool {
     return match env::var("MMRL_INTR") {
-        Ok(val) => true,
-        Err(e) => false,
+        Ok(_val) => true,
+        Err(_e) => false,
     };
 }
 

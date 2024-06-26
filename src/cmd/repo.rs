@@ -32,7 +32,7 @@ fn add_repos_to_json(file_path: &str, new_repos: Vec<String>) -> io::Result<()> 
             if !repos.contains(&repo_value) {
                 repos.push(repo_value);
             } else {
-                println!("\"{}\" has been already added", repo)
+                println!("- \"{}\" has been already added", repo)
             }
         }
     } else {
@@ -53,11 +53,11 @@ pub async fn add(url: Vec<String>) -> () {
     let file_path = "/data/adb/mmrl/repos.json";
     match add_repos_to_json(file_path, url) {
         Ok(_) => {
-            println!("Repositories added successfully.");
+            println!("- Repositories added successfully.");
             exit(0)
         }
         Err(e) => {
-            eprintln!("Error adding repositories: {}", e);
+            eprintln!("! Error adding repositories: {}", e);
             exit(500)
         }
     }
