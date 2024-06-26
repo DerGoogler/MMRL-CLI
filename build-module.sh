@@ -35,14 +35,7 @@ cat <<EOF >update.json
     "version": "$VER",
     "versionCode": "$VER_CODE",
     "zipUrl": "https://github.com/DerGoogler/MMRL-CLI/releases/download/v$VER/mmrl-$VER-module-aarch64.zip",
-    "changelog": "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/CHANGELOG.md"
-}
-EOF
-
-cat <<EOF >system/usr/share/mmrl/config/mmrl/info.json
-{
-    "version": "$VER",
-    "versionCode": "$VER_CODE",
+    "changelog": "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/CHANGELOG.md",
     "author": "$AUT",
     "rustVersion": "$RUST_VER",
     "buildDate": "$BUILD_DATE"

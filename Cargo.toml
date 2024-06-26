@@ -1,7 +1,7 @@
 [package]
 name = "mmrl"
 description = "MMRL comes now as command line interface, with multi module install support!"
-version = "0.3.5"
+version = "0.3.6"
 edition = "2021"
 author = "Der_Googler"
 
@@ -23,8 +23,8 @@ zip = "0.6.6"
 serde_ini = "0.2.0"
 regex = "1.10.2"
 async-recursion = "1.0.5"
-# openssl = { version = "0.10.45", features = ["vendored"] }
-openssl = "0.10.45"
+openssl = { version = "0.10.45", features = ["vendored"] }
+# openssl = "0.10.45"
 url = "2.2"
 walkdir = "2.4.0"
 
