@@ -18,6 +18,13 @@ pub fn get_downloads_dir() -> String {
     };
 }
 
+pub fn is_mmrl() -> bool {
+    return match env::var("MMRL_INTR") {
+        Ok(val) => true,
+        Err(e) => false,
+    };
+}
+
 #[cfg(target_os = "android")]
 pub fn get_downloads_dir() -> String {
     return match env::var("EXTERNAL_STORAGE") {
@@ -81,32 +88,41 @@ pub fn has_apatch_su() -> bool {
     return mount_detect(&Searcher::new(r"(APD|APatch)"));
 }
 
-pub fn get_root_manager() -> String {
+pub fn get_root_manager() -> &'static str {
     if has_magisk_su() {
-        return String::from("Magisk");
+        return "Magisk";
     } else if has_kernel_su() {
-        return String::from("KernelSU");
+        return "KernelSU";
     } else if has_apatch_su() {
-        return String::from("APatchSU");
+        return "APatchSU";
     } else {
-        return String::from("Unknown");
+        return "Unknown";
     }
 }
 
 pub fn get_install_cli(path: &str) -> (&str, Vec<&str>) {
-    let msu = "/system/bin/magisk";
+    let msu = "/data/adb/magisk/magisk64";
     let ksu = "/data/adb/ksu/bin/ksud";
     let asu = "/data/adb/ap/bin/apd";
 
-    if Path::new(msu).exists() {
-        return (msu, vec!["--install-module", path]);
-    } else if Path::new(ksu).exists() {
-        return (ksu, vec!["module", "install", path]);
-    } else if Path::new(asu).exists() {
-        return (asu, vec!["module", "install", path]);
-    } else {
-        println!("! Unable to determine install cli");
-        exit(0)
+    match get_root_manager() {
+        "Magisk" => {
+            return (msu, vec!["--install-module", path]);
+        }
+        "KernelSU" => {
+            return (ksu, vec!["module", "install", path]);
+        }
+        "APatchSU" => {
+            return (asu, vec!["module", "install", path]);
+        }
+        "Unknown" => {
+            println!("! Unable to determine install cli");
+            exit(0)
+        }
+        _ => {
+            println!("! Unable to determine install cli");
+            exit(0)
+        }
     }
 }
 

@@ -9,8 +9,6 @@ use reqwest::Client;
 use std::io::{BufRead, BufReader, Error, ErrorKind};
 use std::process::{exit, Command, Stdio};
 
-const METHOD_STORED: Option<zip::CompressionMethod> = Some(zip::CompressionMethod::Stored);
-
 #[async_recursion]
 pub async fn install(
     client: Client,

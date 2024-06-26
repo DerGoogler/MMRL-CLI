@@ -1,7 +1,7 @@
 [package]
 name = "mmrl"
 description = "MMRL comes now as command line interface, with multi module install support!"
-version = "0.3.4"
+version = "0.3.5"
 edition = "2021"
 author = "Der_Googler"
 
@@ -25,7 +25,6 @@ regex = "1.10.2"
 async-recursion = "1.0.5"
 openssl = { version = "0.10.45", features = ["vendored"] }
 url = "2.2"
-git2 = "0.18.1"
 walkdir = "2.4.0"
 
 [dependencies.confy]

@@ -69,7 +69,7 @@ enum Commands {
         version: String,
     },
     /// Add new repositories
-    #[command(arg_required_else_help = true, aliases = &["view"])]
+    #[command(arg_required_else_help = true)]
     Repo {
         #[clap(subcommand)]
         commands: RepoCommands,
@@ -158,7 +158,7 @@ fn setup() {
         // You can write to the file if needed
         if let Err(err) = writeln!(
             file,
-            "[\n\t\"https://gr.dergoogler.com/gmr/json/modules.json\"\n]"
+            "[\n\t\"https://gr.dergoogler.com/gmr/json/modules.json\",\n\t\"https://magisk-modules-alt-repo.github.io/json-v2/json/modules.json\"]"
         ) {
             eprintln!("Error writing to file: {}", err);
         }

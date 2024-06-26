@@ -29,7 +29,7 @@ const info = include("info.json")
 
 export default () => {
     const [repos, setRepos] = useNativeFileStorage("/data/adb/mmrl/repos.json", [
-        "https://raw.githubusercontent.com/ya0211/magisk-modules-alt-repo/main/json/modules.json",
+        "https://magisk-modules-alt-repo.github.io/json-v2/json/modules.json",
         "https://gr.dergoogler.com/gmr/json/modules.json"
     ], { loader: "json" })
 

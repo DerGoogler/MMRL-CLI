@@ -1,7 +1,6 @@
 use serde_json::Value;
 use std::fs::OpenOptions;
 use std::io::{self, Read, Seek, Write};
-use std::path::Path;
 use std::process::exit;
 
 use crate::repo::{find_module, Module};
