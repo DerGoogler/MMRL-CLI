@@ -26,7 +26,7 @@ import {
   Button,
 } from "@mui/material"
 
-const info = require(path.resolve(__modpath, "update.json"))
+const info = require(path.resolve(__dirname, "info.json"))
 
 const App = () => {
   const [repos, setRepos] = useNativeFileStorage("/data/adb/mmrl/repos.json", [

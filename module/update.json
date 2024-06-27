@@ -1,9 +1,6 @@
 {
-    "version": "0.3.6",
-    "versionCode": "036",
-    "zipUrl": "https://github.com/DerGoogler/MMRL-CLI/releases/download/v0.3.6/mmrl-0.3.6-module-aarch64.zip",
-    "changelog": "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/CHANGELOG.md",
-    "author": "Der_Googler",
-    "rustVersion": "1.78.0",
-    "buildDate": "2024-06-26"
+    "version": "0.3.7",
+    "versionCode": "037",
+    "zipUrl": "https://github.com/DerGoogler/MMRL-CLI/releases/download/v0.3.7/mmrl-0.3.7-module-aarch64.zip",
+    "changelog": "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/CHANGELOG.md"
 }
