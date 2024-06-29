@@ -50,7 +50,7 @@ cat <<EOF >system/usr/share/mmrl/config/mmrl/info.json
 EOF
 
 cp ../CHANGELOG.md .
-cp ../target/aarch64-linux-android/release/mmrl system/usr/share/mmrl/bin/mmrl
+cp ../target/aarch64-linux-android/release/mmrl system/bin/mmrl
 
 FILE_NAME="$NAME-$VER-module-aarch64.zip"
 
@@ -58,9 +58,8 @@ FILE_NAME="$NAME-$VER-module-aarch64.zip"
 dos2unix \
     META-INF/com/google/android/update-binary \
     META-INF/com/google/android/updater-script \
-    system/bin/mmrl \
     *.sh
 
-zip -r "../target/$FILE_NAME" ./* -x "system/usr/share/mmrl/bin/placeholder"
+zip -r "../target/$FILE_NAME" ./* -x "system/bin/placeholder"
 
-rm -rf "system/usr/share/mmrl/bin/mmrl" "CHANGELOG.md"
+rm -rf "system/bin/mmrl" "CHANGELOG.md"

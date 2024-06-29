@@ -10,6 +10,9 @@ use std::{
 
 use ini::Ini;
 
+pub static ANDROID_PATH: &'static str =
+    "$PATH:/system/bin:/system/xbin:/sbin:/data/adb/ksu/bin:/data/adb/ap/bin:/data/adb/magisk";
+
 #[cfg(target_os = "linux")]
 pub fn get_downloads_dir() -> String {
     return match env::var("HOME") {
@@ -101,19 +104,15 @@ pub fn get_root_manager() -> &'static str {
 }
 
 pub fn get_install_cli(path: &str) -> (&str, Vec<&str>) {
-    let msu = "/data/adb/magisk/magisk64";
-    let ksu = "/data/adb/ksu/bin/ksud";
-    let asu = "/data/adb/ap/bin/apd";
-
     match get_root_manager() {
         "Magisk" => {
-            return (msu, vec!["--install-module", path]);
+            return ("magisk", vec!["--install-module", path]);
         }
         "KernelSU" => {
-            return (ksu, vec!["module", "install", path]);
+            return ("ksud", vec!["module", "install", path]);
         }
         "APatchSU" => {
-            return (asu, vec!["module", "install", path]);
+            return ("apd", vec!["module", "install", path]);
         }
         "Unknown" => {
             println!("! Unable to determine install cli");

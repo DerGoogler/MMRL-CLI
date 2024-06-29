@@ -1,4 +1,4 @@
-use crate::android_root::{get_downloads_dir, get_install_cli};
+use crate::android_root::{get_downloads_dir, get_install_cli, ANDROID_PATH};
 use crate::exit;
 use crate::utils::{confirm, download_from_url};
 use reqwest::Client;
@@ -26,6 +26,7 @@ pub async fn upself(client: Client, version: String, yes: bool) {
 
         let stdout = Command::new(bin)
             .args(args)
+            .env("PATH", ANDROID_PATH)
             .stdout(Stdio::piped())
             .spawn()
             .unwrap()

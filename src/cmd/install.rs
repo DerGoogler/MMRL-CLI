@@ -1,12 +1,12 @@
 extern crate serde;
 extern crate serde_ini;
 
-use crate::android_root::{get_downloads_dir, get_install_cli};
+use crate::android_root::{get_downloads_dir, get_install_cli, ANDROID_PATH};
 use crate::repo::{find_module, find_version, get_id_details, Module};
 use crate::utils::{confirm, download_from_url, get_last, is_url};
 use async_recursion::async_recursion;
 use reqwest::Client;
-use std::io::{BufRead, BufReader, Error, ErrorKind};
+use std::io::{BufRead, BufReader, Error, ErrorKind, Read};
 use std::process::{exit, Command, Stdio};
 
 #[async_recursion]
@@ -83,6 +83,7 @@ pub async fn install(
 
             let stdout = Command::new(bin)
                 .args(args)
+                .env("PATH", ANDROID_PATH)
                 .stdout(Stdio::piped())
                 .spawn()
                 .unwrap()
@@ -115,6 +116,7 @@ pub async fn install_local(yes: bool, id: String) -> () {
 
         let stdout = Command::new(bin)
             .args(args)
+            .env("PATH", ANDROID_PATH)
             .stdout(Stdio::piped())
             .spawn()
             .unwrap()

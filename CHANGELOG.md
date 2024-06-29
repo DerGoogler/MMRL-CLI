@@ -1,3 +1,3 @@
-# 0.3.7
+# 0.3.8
 
-- Fixed ModConf error
+- Auto find root cli's
