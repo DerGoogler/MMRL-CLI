@@ -14,6 +14,7 @@ get_prop() { cat ./../Cargo.toml | grep -Po "(?<=^$1 = \")[^\"]*(?=\".*)"; }
 NAME=$(get_prop name)
 VER=$(get_prop version)
 AUT=$(get_prop author)
+LIC=$(get_prop license)
 VER_CODE="${VER//./}"
 BUILD_DATE=$(date "+%Y-%m-%d")
 RUST_VER=$(rustc --version | grep -oP '\d+\.\d+\.\d+')
@@ -27,6 +28,7 @@ versionCode=$VER_CODE
 author=$AUT
 description=MMRL Command Line Interface is a free tool to install Magisk/KernelSU modules. Build on $BUILD_DATE with Rust $RUST_VER.
 updateJson=https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/module/update.json
+license=$LIC
 EOF
 
 # generate update.json
