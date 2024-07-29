@@ -3,6 +3,6 @@ name=MMRL CLI
 version=0.3.8
 versionCode=038
 author=Der_Googler
-description=MMRL Command Line Interface is a free tool to install Magisk/KernelSU modules. Build on 2024-07-03 with Rust 1.78.0.
+description=MMRL Command Line Interface is a free tool to install Magisk/KernelSU modules. Build on 2024-07-29 with Rust 1.78.0.
 updateJson=https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/module/update.json
 license=MIT

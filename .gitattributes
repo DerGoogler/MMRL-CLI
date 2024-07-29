@@ -1,1 +1,4 @@
+*.rs text=auto eol=lf
+*.sh text=auto eol=lf
+*.prop text=auto eol=lf
 * text=auto eol=lf
