@@ -13,5 +13,10 @@
         "System",
         "Configurable"
     ],
-    "readme": "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/README.md"
+    "readme": "https://raw.githubusercontent.com/DerGoogler/MMRL-CLI/master/README.md",
+    "note": {
+        "color": "yellow",
+        "title": "Attention",
+        "message": "The initial install of MMRL-CLI should be through your root manager."
+    }
 }
