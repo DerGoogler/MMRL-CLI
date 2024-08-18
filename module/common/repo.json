@@ -17,6 +17,6 @@
     "note": {
         "color": "yellow",
         "title": "Attention",
-        "message": "The initial install of MMRL-CLI should be through your root manager."
+        "message": "The initial install of MMRL-CLI should be through your root manager. This module is not required above MMRL V3"
     }
 }
